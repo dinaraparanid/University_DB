@@ -25,7 +25,7 @@ internal class StudentRepository(private val connection: Connection) : Repositor
 
     private val self = "Student"
 
-    override fun all(id: Int) = connection
+    override fun all(id: Int, mod: Int) = connection
         .prepareStatement(param)
         .apply {
             setInt(1, id)
@@ -38,7 +38,7 @@ internal class StudentRepository(private val connection: Connection) : Repositor
                         .apply {
                             while (res.next()) {
                                 add(
-                                    Student(
+                                    app.student.Student(
                                         res.getInt("id"),
                                         res.getString("f_name"),
                                         res.getString("s_name"),
@@ -49,6 +49,7 @@ internal class StudentRepository(private val connection: Connection) : Repositor
                                 )
                             }
                         }
+                        .toTypedArray()
                 }
 
         }
@@ -63,7 +64,7 @@ internal class StudentRepository(private val connection: Connection) : Repositor
                         .apply {
                             while (res.next()) {
                                 add(
-                                    Student(
+                                    app.student.Student(
                                         res.getInt("id"),
                                         res.getString("f_name"),
                                         res.getString("s_name"),

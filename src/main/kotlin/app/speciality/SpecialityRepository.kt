@@ -19,13 +19,39 @@ internal class SpecialityRepository(private val connection: Connection) : Reposi
 
         private const val remove = "DELETE FROM Speciality " +
                 "WHERE title = ?"
+
+        private const val param = "SELECT teacher_id FROM Teach_Spec " +
+                "WHERE teacher_id = ?"
     }
 
     private val self = "Speciality"
 
-    override fun all(id: Int): MutableList<Speciality> {
-        TODO()
-    }
+    override fun all(id: Int, mod: Int) = connection
+        .prepareStatement(param)
+        .apply {
+            setInt(1, id)
+        }
+        .use { stm ->
+            stm
+                .executeQuery()
+                .use { res ->
+                    mutableListOf<Speciality>()
+                        .apply {
+                            while (res.next()) {
+                                add(
+                                    Speciality(
+                                        res.getInt("id"),
+                                        res.getString("title"),
+                                        arrayOf(),
+                                        arrayOf()
+                                    )
+                                )
+                            }
+                        }
+                        .toTypedArray()
+                }
+
+        }
 
     override fun all() = connection
         .createStatement()
@@ -42,7 +68,8 @@ internal class SpecialityRepository(private val connection: Connection) : Reposi
                                     Speciality(
                                         id,
                                         res.getString("title"),
-                                        Database.groupRepository.all(id)
+                                        Database.groupRepository.all(id),
+                                        Database.teacherRepository.all(id)
                                     )
                                 )
                             }

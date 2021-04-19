@@ -1,5 +1,6 @@
 package app.department
 
+import app.Database
 import app.Repository
 import java.io.Serializable
 import java.sql.Connection
@@ -19,17 +20,18 @@ internal class DepartmentRepository(private val connection: Connection) : Reposi
         private const val remove = "DELETE FROM Department " +
                 "WHERE title = ? AND faculty_id = ?"
 
-        private const val param = "SELECT * FROM Department " +
+        private const val paramFac = "SELECT * FROM Department " +
                 "WHERE faculty_id = ?"
+
+        private const val paramSubj = "SELECT department_id FROM Subj_Dep " +
+                "WHERE subject_id = ?"
     }
 
     private val self = "Department"
 
-    override fun all(id: Int) = connection
-        .prepareStatement(param)
-        .apply {
-            setInt(1, id)
-        }
+    override fun all(id: Int, mod: Int) = connection
+        .prepareStatement(if (mod == 0) paramFac else paramSubj)
+        .apply { setInt(1, id) }
         .use { stm ->
             stm
                 .executeQuery()
@@ -38,14 +40,16 @@ internal class DepartmentRepository(private val connection: Connection) : Reposi
                         .apply {
                             while (res.next()) {
                                 add(
-                                    Department(
+                                    app.department.Department(
                                         res.getInt("id"),
                                         res.getString("title"),
-                                        res.getString("faculty_id")
+                                        res.getString("faculty_id"),
+                                        arrayOf()
                                     )
                                 )
                             }
                         }
+                        .toTypedArray()
                 }
 
         }
@@ -59,11 +63,14 @@ internal class DepartmentRepository(private val connection: Connection) : Reposi
                     mutableListOf<Department>()
                         .apply {
                             while (res.next()) {
+                                val id = res.getInt("id")
+
                                 add(
-                                    Department(
-                                        res.getInt("id"),
+                                    app.department.Department(
+                                        id,
                                         res.getString("title"),
-                                        res.getString("faculty_id")
+                                        res.getString("faculty_id"),
+                                        Database.subjectRepository.all(id, 1)
                                     )
                                 )
                             }

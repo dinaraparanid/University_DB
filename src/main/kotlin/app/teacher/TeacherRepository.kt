@@ -1,5 +1,6 @@
 package app.teacher
 
+import app.Database
 import app.Repository
 import java.io.Serializable
 import java.sql.Connection
@@ -18,13 +19,45 @@ internal class TeacherRepository(private val connection: Connection) : Repositor
 
         private const val remove = "DELETE FROM Teacher " +
                 "WHERE f_name = ? AND s_name = ? AND m_name = ?"
+
+        private const val paramSpec = "SELECT teacher_id FROM Teach_Spec " +
+                "WHERE speciality_id = ?"
+
+        private const val paramSubj = "SELECT teacher_id FROM Teach_Subj " +
+                "WHERE subject_id = ?"
     }
 
     private val self = "Teacher"
 
-    override fun all(id: Int): MutableList<Teacher> {
-        TODO()
-    }
+    override fun all(id: Int, mod: Int) = connection
+        .prepareStatement(if (mod == 0) paramSpec else paramSubj)
+        .apply {
+            setInt(1, id)
+        }
+        .use { stm ->
+            stm
+                .executeQuery()
+                .use { res ->
+                    mutableListOf<Teacher>()
+                        .apply {
+                            while (res.next()) {
+                                add(
+                                    app.teacher.Teacher(
+                                        res.getInt("id"),
+                                        res.getString("f_name"),
+                                        res.getString("s_name"),
+                                        res.getString("m_name"),
+                                        res.getString("info"),
+                                        arrayOf(),
+                                        arrayOf(),
+                                    )
+                                )
+                            }
+                        }
+                        .toTypedArray()
+                }
+
+        }
 
     override fun all() = connection
         .createStatement()
@@ -35,13 +68,17 @@ internal class TeacherRepository(private val connection: Connection) : Repositor
                     mutableListOf<Teacher>()
                         .apply {
                             while (res.next()) {
+                                val id = res.getInt("id")
+
                                 add(
-                                    Teacher(
-                                        res.getInt("id"),
+                                    app.teacher.Teacher(
+                                        id,
                                         res.getString("f_name"),
                                         res.getString("s_name"),
                                         res.getString("m_name"),
-                                        res.getString("info")
+                                        res.getString("info"),
+                                        Database.specialityRepository.all(id),
+                                        Database.subjectRepository.all(id),
                                     )
                                 )
                             }

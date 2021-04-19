@@ -1,5 +1,6 @@
 package app.subject
 
+import app.Database
 import app.Repository
 import java.io.Serializable
 import java.sql.Connection
@@ -18,13 +19,42 @@ internal class SubjectRepository(private val connection: Connection) : Repositor
 
         private const val remove = "DELETE FROM Subject " +
                 "WHERE title = ?"
+
+        private const val paramTeach = "SELECT teacher_id FROM Teach_Subj " +
+                "WHERE subject_id = ?"
+
+        private const val paramDep = "SELECT teacher_id FROM Subj_Dep " +
+                "WHERE subject_id = ?"
     }
 
     private val self = "Subject"
 
-    override fun all(id: Int): MutableList<Subject> {
-        TODO()
-    }
+    override fun all(id: Int, mod: Int) = connection
+        .prepareStatement(if (mod == 0) paramTeach else paramDep)
+        .apply {
+            setInt(1, id)
+        }
+        .use { stm ->
+            stm
+                .executeQuery()
+                .use { res ->
+                    mutableListOf<Subject>()
+                        .apply {
+                            while (res.next()) {
+                                add(
+                                    app.subject.Subject(
+                                        res.getInt("id"),
+                                        res.getString("title"),
+                                        arrayOf(),
+                                        arrayOf()
+                                    )
+                                )
+                            }
+                        }
+                        .toTypedArray()
+                }
+
+        }
 
     override fun all() = connection
         .createStatement()
@@ -35,10 +65,14 @@ internal class SubjectRepository(private val connection: Connection) : Repositor
                     mutableListOf<Subject>()
                         .apply {
                             while (res.next()) {
+                                val id = res.getInt("id")
+
                                 add(
-                                    Subject(
-                                        res.getInt("id"),
-                                        res.getString("title")
+                                    app.subject.Subject(
+                                        id,
+                                        res.getString("title"),
+                                        Database.teacherRepository.all(id, 1),
+                                        Database.departmentRepository.all(id)
                                     )
                                 )
                             }

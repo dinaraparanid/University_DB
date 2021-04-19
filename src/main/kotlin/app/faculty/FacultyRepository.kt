@@ -23,7 +23,7 @@ internal class FacultyRepository(private val connection: Connection) : Repositor
 
     private val self = "Faculty"
 
-    override fun all(id: Int) = mutableListOf<Faculty>()
+    override fun all(id: Int, mod: Int) = arrayOf<Faculty>()
 
     override fun all() = connection
         .createStatement()
@@ -37,7 +37,7 @@ internal class FacultyRepository(private val connection: Connection) : Repositor
                                 val id = res.getInt("id")
 
                                 add(
-                                    Faculty(
+                                    app.faculty.Faculty(
                                         id,
                                         res.getString("title"),
                                         Database.departmentRepository.all(id)

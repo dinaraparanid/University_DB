@@ -26,7 +26,7 @@ internal class GroupRepository(private val connection: Connection) : Repository<
 
     private val self = "Group"
 
-    override fun all(id: Int) = connection
+    override fun all(id: Int, mod: Int) = connection
         .prepareStatement(param)
         .apply {
             setInt(1, id)
@@ -39,15 +39,16 @@ internal class GroupRepository(private val connection: Connection) : Repository<
                         .apply {
                             while (res.next()) {
                                 add(
-                                    Group(
+                                    app.group.Group(
                                         res.getInt("id"),
                                         res.getString("title"),
                                         res.getInt("speciality_id"),
-                                        Database.studentRepository.all(id)
+                                        arrayOf()
                                     )
                                 )
                             }
                         }
+                        .toTypedArray()
                 }
 
         }
@@ -64,7 +65,7 @@ internal class GroupRepository(private val connection: Connection) : Repository<
                                 val id = res.getInt("id")
 
                                 add(
-                                    Group(
+                                    app.group.Group(
                                         id,
                                         res.getString("title"),
                                         res.getInt("speciality_id"),
