@@ -1,5 +1,6 @@
 package app.speciality
 
+import app.StringContent
 import app.group.Group
 import app.teacher.Teacher
 
@@ -8,7 +9,7 @@ internal data class Speciality(
     val title: String,
     val groups: Array<Group>,
     val teachers: Array<Teacher>
-) {
+) : StringContent<Speciality> {
     override fun equals(other: Any?) = when {
         this === other -> true
         javaClass != other?.javaClass -> false
@@ -33,4 +34,6 @@ internal data class Speciality(
         result = 31 * result + teachers.contentHashCode()
         return result
     }
+
+    override fun asStringArray() = arrayOf(title)
 }

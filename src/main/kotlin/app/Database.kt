@@ -18,7 +18,7 @@ internal object Database {
                     "\\",
                     "/"
                 )
-            }/base.db"
+            }/StudentBase.db"
         }
         .connection
         .apply { autoCommit = true }

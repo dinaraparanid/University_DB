@@ -8,19 +8,19 @@ import javax.swing.JOptionPane
 
 internal class GroupRepository(private val connection: Connection) : Repository<Group> {
     companion object SQLCommands {
-        private const val all = "SELECT * FROM Group"
+        private const val all = "SELECT * FROM Groups"
 
-        private const val add = "INSERT INTO Group (id, title, speciality_id) " +
+        private const val add = "INSERT INTO Groups (id, title, speciality_id) " +
                 "VALUES (?, ?, ?)"
 
-        private const val update = "UPDATE Group SET " +
+        private const val update = "UPDATE Groups SET " +
                 "title = ?, speciality_id = ? " +
                 "WHERE id = ?"
 
-        private const val remove = "DELETE FROM Group " +
+        private const val remove = "DELETE FROM Groups " +
                 "WHERE title = ? AND speciality_id = ?"
 
-        private const val param = "SELECT * FROM Group " +
+        private const val param = "SELECT * FROM Groups " +
                 "WHERE speciality_id = ?"
     }
 

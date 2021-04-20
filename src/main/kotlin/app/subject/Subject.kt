@@ -1,5 +1,6 @@
 package app.subject
 
+import app.StringContent
 import app.department.Department
 import app.teacher.Teacher
 
@@ -8,7 +9,7 @@ internal data class Subject(
     val title: String,
     val teachers: Array<Teacher>,
     val departments: Array<Department>
-) {
+) : StringContent<Subject> {
     override fun equals(other: Any?) = when {
         this === other -> true
         javaClass != other?.javaClass -> false
@@ -32,4 +33,6 @@ internal data class Subject(
         result = 31 * result + departments.contentHashCode()
         return result
     }
+
+    override fun asStringArray() = arrayOf(title)
 }

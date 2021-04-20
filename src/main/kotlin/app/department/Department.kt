@@ -1,5 +1,6 @@
 package app.department
 
+import app.StringContent
 import app.subject.Subject
 
 internal data class Department(
@@ -7,7 +8,7 @@ internal data class Department(
     val title: String,
     val facultyId: String,
     val subjects: Array<Subject>
-) {
+) : StringContent<Department> {
     override fun equals(other: Any?) = when {
         this === other -> true
         javaClass != other?.javaClass -> false
@@ -32,4 +33,6 @@ internal data class Department(
         result = 31 * result + subjects.contentHashCode()
         return result
     }
+
+    override fun asStringArray() = arrayOf(title)
 }
