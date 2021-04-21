@@ -8,7 +8,7 @@ internal data class Group(
     val title: String,
     val specialityId: Int,
     val students: Array<Student>
-) : StringContent<Group> {
+) : StringContent {
     override fun equals(other: Any?) = when {
         this === other -> true
         javaClass != other?.javaClass -> false

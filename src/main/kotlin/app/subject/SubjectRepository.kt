@@ -1,14 +1,15 @@
 package app.subject
 
-import app.Database
-import app.Repository
-import java.io.Serializable
+import app.*
+import app.Repository.Arg
 import java.sql.Connection
-import javax.swing.JOptionPane
 
 internal class SubjectRepository(private val connection: Connection) : Repository<Subject> {
     companion object SQLCommands {
         private const val all = "SELECT * FROM Subject"
+
+        private const val filtered = "SELECT * FROM Subject " +
+                "WHERE id = ?"
 
         private const val add = "INSERT INTO Subject (id, title) " +
                 "VALUES (?, ?)"
@@ -31,27 +32,36 @@ internal class SubjectRepository(private val connection: Connection) : Repositor
 
     override fun all(id: Int, mod: Int) = connection
         .prepareStatement(if (mod == 0) paramTeach else paramDep)
-        .apply {
-            setInt(1, id)
-        }
+        .apply { setInt(1, id) }
         .use { stm ->
             stm
                 .executeQuery()
                 .use { res ->
-                    mutableListOf<Subject>()
-                        .apply {
-                            while (res.next()) {
-                                add(
-                                    app.subject.Subject(
-                                        res.getInt("id"),
-                                        res.getString("title"),
-                                        arrayOf(),
-                                        arrayOf()
-                                    )
-                                )
-                            }
+                    res.next()
+
+                    connection
+                        .prepareStatement(filtered)
+                        .apply { res.getInt("subject_id") }
+                        .use { stm ->
+                            stm
+                                .executeQuery()
+                                .use { res ->
+                                    mutableListOf<Subject>()
+                                        .apply {
+                                            while (res.next()) {
+                                                add(
+                                                    app.subject.Subject(
+                                                        res.getInt("id"),
+                                                        res.getString("title"),
+                                                        arrayOf(),
+                                                        arrayOf()
+                                                    )
+                                                )
+                                            }
+                                        }
+                                        .toTypedArray()
+                                }
                         }
-                        .toTypedArray()
                 }
 
         }
@@ -81,80 +91,81 @@ internal class SubjectRepository(private val connection: Connection) : Repositor
                 }
         }
 
-    override fun add(vararg args: Serializable) = connection
+    override fun add(vararg args: Arg) = connection
         .prepareStatement(add)
         .apply {
-            setInt(1, args[0] as Int)       // id
-            setString(2, args[1] as String) // title
+            setInt(1, args[0].parseIntArg())    // id
+            setString(2, args[1].parseStrArg()) // title
         }
         .use { stm ->
             try {
-                stm.execute()
+                stm.execute().run {}
 
-                JOptionPane.showMessageDialog(
+                /*JOptionPane.showMessageDialog(
                     null,
                     "Success",
                     "$self added",
                     JOptionPane.INFORMATION_MESSAGE
-                )
+                )*/
             } catch (e: Exception) {
-                JOptionPane.showMessageDialog(
+                null
+                /*JOptionPane.showMessageDialog(
                     null,
                     "Something went wrong",
                     "Failure",
                     JOptionPane.INFORMATION_MESSAGE
-                )
+                )*/
             }
         }
 
-    override fun remove(vararg args: Serializable) = connection
+    override fun remove(vararg args: Arg) = connection
         .prepareStatement(remove)
-        .apply {
-            setString(1, args[0] as String) // title
-        }
+        .apply { setString(1, args[0].parseStrArg()) } // title
         .use { stm ->
             try {
-                stm.execute()
+                stm.execute().run {}
 
-                JOptionPane.showMessageDialog(
+                /*JOptionPane.showMessageDialog(
                     null,
                     "Success",
                     "$self removed",
                     JOptionPane.INFORMATION_MESSAGE
-                )
+                )*/
             } catch (e: Exception) {
-                JOptionPane.showMessageDialog(
+                null
+                /*JOptionPane.showMessageDialog(
                     null,
                     "Something went wrong",
                     "Failure",
                     JOptionPane.INFORMATION_MESSAGE
-                )
+                )*/
             }
         }
 
-    override fun update(vararg args: Serializable) = connection
+    override fun update(vararg args: Arg) = connection
         .prepareStatement(update)
         .apply {
-            setString(1, args[0] as String) // title
-            setInt(2, args[1] as Int)       // id
+            setString(1, args[0].parseStrArg()) // title
+            setInt(2, args[1].parseIntArg())    // id
         }
         .use { stm ->
             try {
-                stm.execute()
+                stm.execute().run {}
 
-                JOptionPane.showMessageDialog(
+                /*JOptionPane.showMessageDialog(
                     null,
                     "Success",
                     "$self updated",
                     JOptionPane.INFORMATION_MESSAGE
-                )
+                )*/
             } catch (e: Exception) {
-                JOptionPane.showMessageDialog(
+                null
+                /*JOptionPane.showMessageDialog(
                     null,
                     "Something went wrong",
                     "Failure",
                     JOptionPane.INFORMATION_MESSAGE
-                )
+                )*/
             }
         }
 }

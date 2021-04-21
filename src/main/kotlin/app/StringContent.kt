@@ -1,5 +1,5 @@
 package app
 
-internal interface StringContent<T> {
+internal interface StringContent {
     fun asStringArray(): Array<String>
 }

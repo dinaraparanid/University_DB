@@ -9,6 +9,6 @@ internal data class Student(
     val middleName: String,
     val groupId: Int,
     val info: String,
-) : StringContent<Student> {
+) : StringContent {
     override fun asStringArray() = arrayOf(firstName, secondName, middleName)
 }

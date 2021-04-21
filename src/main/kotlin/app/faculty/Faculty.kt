@@ -7,7 +7,7 @@ internal data class Faculty(
     val id: Int,
     val title: String,
     val departments: Array<Department>
-) : StringContent<Faculty> {
+) : StringContent {
     override fun equals(other: Any?) = when {
         this === other -> true
         javaClass != other?.javaClass -> false

@@ -9,7 +9,7 @@ internal data class Subject(
     val title: String,
     val teachers: Array<Teacher>,
     val departments: Array<Department>
-) : StringContent<Subject> {
+) : StringContent {
     override fun equals(other: Any?) = when {
         this === other -> true
         javaClass != other?.javaClass -> false

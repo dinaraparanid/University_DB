@@ -10,9 +10,9 @@ internal abstract class ContentTable<T>(
     content: () -> Array<T>,
     vararg params: String
 ) : JMenuItem(title)
-        where T : StringContent<T> {
-    private val window = JFrame(title).contentPane.apply {
-        add(
+        where T : StringContent {
+    private val window = JFrame(title).apply {
+        contentPane.add(
             JTable(
                 content()
                     .map { it.asStringArray() }

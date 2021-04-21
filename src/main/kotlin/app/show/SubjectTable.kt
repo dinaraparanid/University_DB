@@ -6,5 +6,5 @@ import app.subject.Subject
 internal class SubjectTable : ContentTable<Subject>(
     "Subjects",
     { Database.subjectRepository.all() },
-    "title"
+    "Title"
 )

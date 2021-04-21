@@ -1,14 +1,16 @@
 package app.teacher
 
-import app.Database
-import app.Repository
-import java.io.Serializable
+import app.*
+import app.Repository.Arg
 import java.sql.Connection
 import javax.swing.JOptionPane
 
 internal class TeacherRepository(private val connection: Connection) : Repository<Teacher> {
     companion object SQLCommands {
         private const val all = "SELECT * FROM Teacher"
+
+        private const val filtered = "SELECT * FROM Teacher " +
+                "WHERE id = ?"
 
         private const val add = "INSERT INTO Teacher (id, f_name, s_name, m_name, info) " +
                 "VALUES (?, ?, ?, ?, ?)"
@@ -31,30 +33,39 @@ internal class TeacherRepository(private val connection: Connection) : Repositor
 
     override fun all(id: Int, mod: Int) = connection
         .prepareStatement(if (mod == 0) paramSpec else paramSubj)
-        .apply {
-            setInt(1, id)
-        }
+        .apply { setInt(1, id) }
         .use { stm ->
             stm
                 .executeQuery()
                 .use { res ->
-                    mutableListOf<Teacher>()
-                        .apply {
-                            while (res.next()) {
-                                add(
-                                    app.teacher.Teacher(
-                                        res.getInt("id"),
-                                        res.getString("f_name"),
-                                        res.getString("s_name"),
-                                        res.getString("m_name"),
-                                        res.getString("info"),
-                                        arrayOf(),
-                                        arrayOf(),
-                                    )
-                                )
-                            }
+                    res.next()
+
+                    connection
+                        .prepareStatement(filtered)
+                        .apply { setInt(1, res.getInt("teacher_id")) }
+                        .use { stm ->
+                            stm
+                                .executeQuery()
+                                .use { res ->
+                                    mutableListOf<Teacher>()
+                                        .apply {
+                                            while (res.next()) {
+                                                add(
+                                                    app.teacher.Teacher(
+                                                        res.getInt("id"),
+                                                        res.getString("f_name"),
+                                                        res.getString("s_name"),
+                                                        res.getString("m_name"),
+                                                        res.getString("info"),
+                                                        arrayOf(),
+                                                        arrayOf(),
+                                                    )
+                                                )
+                                            }
+                                        }
+                                        .toTypedArray()
+                                }
                         }
-                        .toTypedArray()
                 }
 
         }
@@ -87,88 +98,91 @@ internal class TeacherRepository(private val connection: Connection) : Repositor
                 }
         }
 
-    override fun add(vararg args: Serializable) = connection
+    override fun add(vararg args: Arg) = connection
         .prepareStatement(add)
         .apply {
-            setInt(1, args[0] as Int)       // id
-            setString(2, args[1] as String) // first name
-            setString(3, args[2] as String) // second name
-            setString(4, args[3] as String) // middle name
-            setString(5, args[4] as String) // info
+            setInt(1, args[0].parseIntArg())    // id
+            setString(2, args[1].parseStrArg()) // first name
+            setString(3, args[2].parseStrArg()) // second name
+            setString(4, args[3].parseStrArg()) // middle name
+            setString(5, args[4].parseStrArg()) // info
         }
         .use { stm ->
             try {
-                stm.execute()
+                stm.execute().run {}
 
-                JOptionPane.showMessageDialog(
+                /*JOptionPane.showMessageDialog(
                     null,
                     "Success",
                     "$self added",
                     JOptionPane.INFORMATION_MESSAGE
-                )
+                )*/
             } catch (e: Exception) {
-                JOptionPane.showMessageDialog(
+                null
+                /*JOptionPane.showMessageDialog(
                     null,
                     "Something went wrong",
                     "Failure",
                     JOptionPane.INFORMATION_MESSAGE
-                )
+                )*/
             }
         }
 
-    override fun update(vararg args: Serializable) = connection
+    override fun update(vararg args: Arg) = connection
         .prepareStatement(update)
         .apply {
-            setString(1, args[0] as String) // first name
-            setString(2, args[1] as String) // second name
-            setString(3, args[2] as String) // middle name
-            setString(4, args[3] as String) // info
-            setInt(5, args[4] as Int)       // id
+            setString(1, args[0].parseStrArg()) // first name
+            setString(2, args[1].parseStrArg()) // second name
+            setString(3, args[2].parseStrArg()) // middle name
+            setString(4, args[3].parseStrArg()) // info
+            setInt(5, args[4].parseIntArg())    // id
         }
         .use { stm ->
             try {
-                stm.execute()
+                stm.execute().run {}
 
-                JOptionPane.showMessageDialog(
+                /*JOptionPane.showMessageDialog(
                     null,
                     "Success",
                     "$self updated",
                     JOptionPane.INFORMATION_MESSAGE
-                )
+                )*/
             } catch (e: Exception) {
-                JOptionPane.showMessageDialog(
+                null
+                /*JOptionPane.showMessageDialog(
                     null,
                     "Something went wrong",
                     "Failure",
                     JOptionPane.INFORMATION_MESSAGE
-                )
+                )*/
             }
         }
 
-    override fun remove(vararg args: Serializable) = connection
+    override fun remove(vararg args: Arg) = connection
         .prepareStatement(remove)
         .apply {
-            setString(1, args[0] as String) // first name
-            setString(2, args[1] as String) // second name
-            setString(3, args[2] as String) // middle name
+            setString(1, args[0].parseStrArg()) // first name
+            setString(2, args[1].parseStrArg()) // second name
+            setString(3, args[2].parseStrArg()) // middle name
         }
         .use { stm ->
             try {
-                stm.execute()
+                stm.execute().run {}
 
-                JOptionPane.showMessageDialog(
+                /*JOptionPane.showMessageDialog(
                     null,
                     "Success",
                     "$self removed",
                     JOptionPane.INFORMATION_MESSAGE
-                )
+                )*/
             } catch (e: Exception) {
-                JOptionPane.showMessageDialog(
+                null
+                /*JOptionPane.showMessageDialog(
                     null,
                     "Something went wrong",
                     "Failure",
                     JOptionPane.INFORMATION_MESSAGE
-                )
+                )*/
             }
         }
 }

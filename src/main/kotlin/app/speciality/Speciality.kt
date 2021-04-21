@@ -9,7 +9,7 @@ internal data class Speciality(
     val title: String,
     val groups: Array<Group>,
     val teachers: Array<Teacher>
-) : StringContent<Speciality> {
+) : StringContent {
     override fun equals(other: Any?) = when {
         this === other -> true
         javaClass != other?.javaClass -> false
