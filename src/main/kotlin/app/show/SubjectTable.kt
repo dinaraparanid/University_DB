@@ -7,4 +7,4 @@ internal class SubjectTable : ContentTable<Subject>(
     "Subjects",
     { Database.subjectRepository.all() },
     "Title"
-)
+) { init { text = "Subjects" } }

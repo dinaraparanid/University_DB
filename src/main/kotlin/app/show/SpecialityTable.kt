@@ -7,4 +7,4 @@ internal class SpecialityTable : ContentTable<Speciality>(
     "Specialities",
     { Database.specialityRepository.all() },
     "Title"
-)
+) { init { text = "Specialities" } }

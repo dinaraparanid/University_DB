@@ -9,4 +9,4 @@ internal class StudentTable : ContentTable<Student>(
     "First Name",
     "Second Name",
     "Middle Name"
-)
+) { init { text = "Students" } }

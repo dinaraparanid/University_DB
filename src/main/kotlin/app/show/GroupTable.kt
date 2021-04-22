@@ -7,4 +7,4 @@ internal class GroupTable : ContentTable<Group>(
     "Groups",
     { Database.groupRepository.all() },
     "Title"
-)
+) { init { text = "Groups" } }
