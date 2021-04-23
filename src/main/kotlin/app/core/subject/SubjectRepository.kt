@@ -1,38 +1,35 @@
-package app.teacher
+package app.core.subject
 
-import app.*
-import app.Repository.Arg
+import app.core.*
+import app.core.Repository.Arg
 import java.sql.Connection
-import javax.swing.JOptionPane
 
-internal class TeacherRepository(private val connection: Connection) : Repository<Teacher> {
+internal class SubjectRepository(private val connection: Connection) : Repository<Subject> {
     companion object SQLCommands {
-        private const val all = "SELECT * FROM Teacher"
+        private const val all = "SELECT * FROM Subject"
 
-        private const val filtered = "SELECT * FROM Teacher " +
+        private const val filtered = "SELECT * FROM Subject " +
                 "WHERE id = ?"
 
-        private const val add = "INSERT INTO Teacher (id, f_name, s_name, m_name, info) " +
-                "VALUES (?, ?, ?, ?, ?)"
+        private const val add = "INSERT INTO Subject (id, title) " +
+                "VALUES (?, ?)"
 
-        private const val update = "UPDATE Teacher SET " +
-                "f_name = ?, s_name = ?, m_name = ?, info = ? " +
+        private const val update = "UPDATE Subject SET " +
+                "title = ? " +
                 "WHERE id = ?"
 
-        private const val remove = "DELETE FROM Teacher " +
-                "WHERE f_name = ? AND s_name = ? AND m_name = ?"
+        private const val remove = "DELETE FROM Subject " +
+                "WHERE title = ?"
 
-        private const val paramSpec = "SELECT teacher_id FROM Teach_Spec " +
-                "WHERE speciality_id = ?"
+        private const val paramTeach = "SELECT teacher_id FROM Teach_Subj " +
+                "WHERE subject_id = ?"
 
-        private const val paramSubj = "SELECT teacher_id FROM Teach_Subj " +
+        private const val paramDep = "SELECT teacher_id FROM Subj_Dep " +
                 "WHERE subject_id = ?"
     }
 
-    private val self = "Teacher"
-
     override fun all(id: Int, mod: Int) = connection
-        .prepareStatement(if (mod == 0) paramSpec else paramSubj)
+        .prepareStatement(if (mod == 0) paramTeach else paramDep)
         .apply { setInt(1, id) }
         .use { stm ->
             stm
@@ -42,23 +39,20 @@ internal class TeacherRepository(private val connection: Connection) : Repositor
 
                     connection
                         .prepareStatement(filtered)
-                        .apply { setInt(1, res.getInt("teacher_id")) }
+                        .apply { res.getInt("subject_id") }
                         .use { stm ->
                             stm
                                 .executeQuery()
                                 .use { res ->
-                                    mutableListOf<Teacher>()
+                                    mutableListOf<Subject>()
                                         .apply {
                                             while (res.next()) {
                                                 add(
-                                                    app.teacher.Teacher(
+                                                    Subject(
                                                         res.getInt("id"),
-                                                        res.getString("f_name"),
-                                                        res.getString("s_name"),
-                                                        res.getString("m_name"),
-                                                        res.getString("info"),
+                                                        res.getString("title"),
                                                         arrayOf(),
-                                                        arrayOf(),
+                                                        arrayOf()
                                                     )
                                                 )
                                             }
@@ -76,20 +70,17 @@ internal class TeacherRepository(private val connection: Connection) : Repositor
             stm
                 .executeQuery(all)
                 .use { res ->
-                    mutableListOf<Teacher>()
+                    mutableListOf<Subject>()
                         .apply {
                             while (res.next()) {
                                 val id = res.getInt("id")
 
                                 add(
-                                    app.teacher.Teacher(
+                                    Subject(
                                         id,
-                                        res.getString("f_name"),
-                                        res.getString("s_name"),
-                                        res.getString("m_name"),
-                                        res.getString("info"),
-                                        Database.specialityRepository.all(id),
-                                        Database.subjectRepository.all(id),
+                                        res.getString("title"),
+                                        Database.teacherRepository.all(id, 1),
+                                        Database.departmentRepository.all(id)
                                     )
                                 )
                             }
@@ -102,10 +93,7 @@ internal class TeacherRepository(private val connection: Connection) : Repositor
         .prepareStatement(add)
         .apply {
             setInt(1, args[0].parseIntArg())    // id
-            setString(2, args[1].parseStrArg()) // first name
-            setString(3, args[2].parseStrArg()) // second name
-            setString(4, args[3].parseStrArg()) // middle name
-            setString(5, args[4].parseStrArg()) // info
+            setString(2, args[1].parseStrArg()) // title
         }
         .use { stm ->
             try {
@@ -128,15 +116,9 @@ internal class TeacherRepository(private val connection: Connection) : Repositor
             }
         }
 
-    override fun update(vararg args: Arg) = connection
-        .prepareStatement(update)
-        .apply {
-            setString(1, args[0].parseStrArg()) // first name
-            setString(2, args[1].parseStrArg()) // second name
-            setString(3, args[2].parseStrArg()) // middle name
-            setString(4, args[3].parseStrArg()) // info
-            setInt(5, args[4].parseIntArg())    // id
-        }
+    override fun remove(vararg args: Arg) = connection
+        .prepareStatement(remove)
+        .apply { setString(1, args[0].parseStrArg()) } // title
         .use { stm ->
             try {
                 stm.execute().run {}
@@ -144,7 +126,7 @@ internal class TeacherRepository(private val connection: Connection) : Repositor
                 /*JOptionPane.showMessageDialog(
                     null,
                     "Success",
-                    "$self updated",
+                    "$self removed",
                     JOptionPane.INFORMATION_MESSAGE
                 )*/
             } catch (e: Exception) {
@@ -158,12 +140,11 @@ internal class TeacherRepository(private val connection: Connection) : Repositor
             }
         }
 
-    override fun remove(vararg args: Arg) = connection
-        .prepareStatement(remove)
+    override fun update(vararg args: Arg) = connection
+        .prepareStatement(update)
         .apply {
-            setString(1, args[0].parseStrArg()) // first name
-            setString(2, args[1].parseStrArg()) // second name
-            setString(3, args[2].parseStrArg()) // middle name
+            setString(1, args[0].parseStrArg()) // title
+            setInt(2, args[1].parseIntArg())    // id
         }
         .use { stm ->
             try {
@@ -172,7 +153,7 @@ internal class TeacherRepository(private val connection: Connection) : Repositor
                 /*JOptionPane.showMessageDialog(
                     null,
                     "Success",
-                    "$self removed",
+                    "$self updated",
                     JOptionPane.INFORMATION_MESSAGE
                 )*/
             } catch (e: Exception) {

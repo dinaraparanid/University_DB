@@ -1,7 +1,7 @@
 package app.show
 
-import app.Database
-import app.subject.Subject
+import app.core.Database
+import app.core.subject.Subject
 
 internal class SubjectTable : ContentTable<Subject>(
     "Subjects",

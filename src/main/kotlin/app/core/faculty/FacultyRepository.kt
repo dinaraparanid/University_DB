@@ -1,53 +1,25 @@
-package app.group
+package app.core.faculty
 
-import app.*
-import app.Repository.Arg
+import app.core.*
+import app.core.Repository.Arg
 import java.sql.Connection
 
-internal class GroupRepository(private val connection: Connection) : Repository<Group> {
+internal class FacultyRepository(private val connection: Connection) : Repository<Faculty> {
     companion object SQLCommands {
-        private const val all = "SELECT * FROM Groups"
+        private const val all = "SELECT * FROM Faculty"
 
-        private const val add = "INSERT INTO Groups (id, title, speciality_id) " +
-                "VALUES (?, ?, ?)"
+        private const val add = "INSERT INTO Faculty (id, title) " +
+                "VALUES (?, ?)"
 
-        private const val update = "UPDATE Groups SET " +
-                "title = ?, speciality_id = ? " +
+        private const val update = "UPDATE Faculty SET " +
+                "title = ? " +
                 "WHERE id = ?"
 
-        private const val remove = "DELETE FROM Groups " +
-                "WHERE title = ? AND speciality_id = ?"
-
-        private const val param = "SELECT * FROM Groups " +
-                "WHERE speciality_id = ?"
+        private const val remove = "DELETE FROM Faculty " +
+                "WHERE title = ?"
     }
 
-    private val self = "Group"
-
-    override fun all(id: Int, mod: Int) = connection
-        .prepareStatement(param)
-        .apply { setInt(1, id) }
-        .use { stm ->
-            stm
-                .executeQuery()
-                .use { res ->
-                    mutableListOf<Group>()
-                        .apply {
-                            while (res.next()) {
-                                add(
-                                    app.group.Group(
-                                        res.getInt("id"),
-                                        res.getString("title"),
-                                        res.getInt("speciality_id"),
-                                        arrayOf()
-                                    )
-                                )
-                            }
-                        }
-                        .toTypedArray()
-                }
-
-        }
+    override fun all(id: Int, mod: Int) = arrayOf<Faculty>()
 
     override fun all() = connection
         .createStatement()
@@ -55,17 +27,16 @@ internal class GroupRepository(private val connection: Connection) : Repository<
             stm
                 .executeQuery(all)
                 .use { res ->
-                    mutableListOf<Group>()
+                    mutableListOf<Faculty>()
                         .apply {
                             while (res.next()) {
                                 val id = res.getInt("id")
 
                                 add(
-                                    app.group.Group(
+                                    Faculty(
                                         id,
                                         res.getString("title"),
-                                        res.getInt("speciality_id"),
-                                        Database.studentRepository.all(id)
+                                        Database.departmentRepository.all(id)
                                     )
                                 )
                             }
@@ -79,7 +50,6 @@ internal class GroupRepository(private val connection: Connection) : Repository<
         .apply {
             setInt(1, args[0].parseIntArg())    // id
             setString(2, args[1].parseStrArg()) // title
-            setInt(3, args[2].parseIntArg())    // speciality id
         }
         .use { stm ->
             try {
@@ -106,8 +76,7 @@ internal class GroupRepository(private val connection: Connection) : Repository<
         .prepareStatement(update)
         .apply {
             setString(1, args[0].parseStrArg()) // title
-            setInt(2, args[1].parseIntArg())    // speciality id
-            setInt(3, args[2].parseIntArg())    // id
+            setInt(2, args[1].parseIntArg())    // id
         }
         .use { stm ->
             try {
@@ -132,10 +101,7 @@ internal class GroupRepository(private val connection: Connection) : Repository<
 
     override fun remove(vararg args: Arg) = connection
         .prepareStatement(remove)
-        .apply {
-            setString(1, args[0].parseStrArg()) // title
-            setInt(2, args[1].parseIntArg())    // speciality id
-        }
+        .apply { setString(1, args[0].parseStrArg()) } // title
         .use { stm ->
             try {
                 stm.execute().run {}

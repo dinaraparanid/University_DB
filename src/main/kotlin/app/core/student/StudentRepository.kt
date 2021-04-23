@@ -1,7 +1,7 @@
-package app.student
+package app.core.student
 
-import app.Repository
-import app.Repository.Arg
+import app.core.Repository
+import app.core.Repository.Arg
 import java.sql.Connection
 
 internal class StudentRepository(private val connection: Connection) : Repository<Student> {
@@ -22,8 +22,6 @@ internal class StudentRepository(private val connection: Connection) : Repositor
                 "WHERE group_id = ?"
     }
 
-    private val self = "Student"
-
     override fun all(id: Int, mod: Int) = connection
         .prepareStatement(param)
         .apply { setInt(1, id) }
@@ -35,7 +33,7 @@ internal class StudentRepository(private val connection: Connection) : Repositor
                         .apply {
                             while (res.next()) {
                                 add(
-                                    app.student.Student(
+                                    Student(
                                         res.getInt("id"),
                                         res.getString("f_name"),
                                         res.getString("s_name"),
@@ -61,7 +59,7 @@ internal class StudentRepository(private val connection: Connection) : Repositor
                         .apply {
                             while (res.next()) {
                                 add(
-                                    app.student.Student(
+                                    Student(
                                         res.getInt("id"),
                                         res.getString("f_name"),
                                         res.getString("s_name"),

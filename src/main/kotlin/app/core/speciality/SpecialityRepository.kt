@@ -1,37 +1,32 @@
-package app.subject
+package app.core.speciality
 
-import app.*
-import app.Repository.Arg
+import app.core.*
+import app.core.Repository.Arg
 import java.sql.Connection
 
-internal class SubjectRepository(private val connection: Connection) : Repository<Subject> {
+internal class SpecialityRepository(private val connection: Connection) : Repository<Speciality> {
     companion object SQLCommands {
-        private const val all = "SELECT * FROM Subject"
+        private const val all = "SELECT * FROM Speciality"
 
-        private const val filtered = "SELECT * FROM Subject " +
+        private const val filtered = "SELECT * FROM Speciality " +
                 "WHERE id = ?"
 
-        private const val add = "INSERT INTO Subject (id, title) " +
+        private const val add = "INSERT INTO Speciality (id, title) " +
                 "VALUES (?, ?)"
 
-        private const val update = "UPDATE Subject SET " +
+        private const val update = "UPDATE Speciality SET " +
                 "title = ? " +
                 "WHERE id = ?"
 
-        private const val remove = "DELETE FROM Subject " +
+        private const val remove = "DELETE FROM Speciality " +
                 "WHERE title = ?"
 
-        private const val paramTeach = "SELECT teacher_id FROM Teach_Subj " +
-                "WHERE subject_id = ?"
-
-        private const val paramDep = "SELECT teacher_id FROM Subj_Dep " +
-                "WHERE subject_id = ?"
+        private const val param = "SELECT speciality_id FROM Teach_Spec " +
+                "WHERE teacher_id = ?"
     }
 
-    private val self = "Subject"
-
     override fun all(id: Int, mod: Int) = connection
-        .prepareStatement(if (mod == 0) paramTeach else paramDep)
+        .prepareStatement(param)
         .apply { setInt(1, id) }
         .use { stm ->
             stm
@@ -41,16 +36,16 @@ internal class SubjectRepository(private val connection: Connection) : Repositor
 
                     connection
                         .prepareStatement(filtered)
-                        .apply { res.getInt("subject_id") }
+                        .apply { setInt(1, res.getInt("speciality_id")) }
                         .use { stm ->
                             stm
                                 .executeQuery()
                                 .use { res ->
-                                    mutableListOf<Subject>()
+                                    mutableListOf<Speciality>()
                                         .apply {
                                             while (res.next()) {
                                                 add(
-                                                    app.subject.Subject(
+                                                    Speciality(
                                                         res.getInt("id"),
                                                         res.getString("title"),
                                                         arrayOf(),
@@ -72,17 +67,17 @@ internal class SubjectRepository(private val connection: Connection) : Repositor
             stm
                 .executeQuery(all)
                 .use { res ->
-                    mutableListOf<Subject>()
+                    mutableListOf<Speciality>()
                         .apply {
                             while (res.next()) {
                                 val id = res.getInt("id")
 
                                 add(
-                                    app.subject.Subject(
+                                    Speciality(
                                         id,
                                         res.getString("title"),
-                                        Database.teacherRepository.all(id, 1),
-                                        Database.departmentRepository.all(id)
+                                        Database.groupRepository.all(id),
+                                        Database.teacherRepository.all(id)
                                     )
                                 )
                             }

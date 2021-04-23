@@ -18,6 +18,8 @@ object Program {
     }
 
     private val addMenu = JMenu("Add")
+
+
     private val removeMenu = JMenu("Remove")
     private val updateMenu = JMenu("Update")
 

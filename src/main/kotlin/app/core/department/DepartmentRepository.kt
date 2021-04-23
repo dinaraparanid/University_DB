@@ -1,7 +1,7 @@
-package app.department
+package app.core.department
 
-import app.*
-import app.Repository.Arg
+import app.core.*
+import app.core.Repository.Arg
 import java.sql.Connection
 
 internal class DepartmentRepository(private val connection: Connection) : Repository<Department> {
@@ -21,14 +21,12 @@ internal class DepartmentRepository(private val connection: Connection) : Reposi
         private const val remove = "DELETE FROM Department " +
                 "WHERE title = ? AND faculty_id = ?"
 
-        private const val paramFac = "SELECT department_id FROM Department " +
+        private const val paramFac = "SELECT id FROM Department " +
                 "WHERE faculty_id = ?"
 
         private const val paramSubj = "SELECT department_id FROM Subj_Dep " +
                 "WHERE subject_id = ?"
     }
-
-    private val self = "Department"
 
     override fun all(id: Int, mod: Int) = connection
         .prepareStatement(if (mod == 0) paramFac else paramSubj)
@@ -39,29 +37,35 @@ internal class DepartmentRepository(private val connection: Connection) : Reposi
                 .use { res ->
                     res.next()
 
-                    connection
-                        .prepareStatement(filtered)
-                        .apply { setInt(1, res.getInt("department_id")) }
-                        .use { stm ->
-                            stm
-                                .executeQuery()
-                                .use { res ->
-                                    mutableListOf<Department>()
-                                        .apply {
-                                            while (res.next()) {
-                                                add(
-                                                    app.department.Department(
-                                                        res.getInt("id"),
-                                                        res.getString("title"),
-                                                        res.getString("faculty_id"),
-                                                        arrayOf()
-                                                    )
-                                                )
-                                            }
+                    when {
+                        res.isClosed -> arrayOf()
+
+                        else -> {
+                            connection
+                                .prepareStatement(filtered)
+                                .apply { setInt(1, res.getInt(if (mod == 0) "id" else "department_id")) }
+                                .use { stm ->
+                                    stm
+                                        .executeQuery()
+                                        .use { res ->
+                                            mutableListOf<Department>()
+                                                .apply {
+                                                    while (res.next()) {
+                                                        add(
+                                                            Department(
+                                                                res.getInt("id"),
+                                                                res.getString("title"),
+                                                                res.getString("faculty_id"),
+                                                                arrayOf()
+                                                            )
+                                                        )
+                                                    }
+                                                }
+                                                .toTypedArray()
                                         }
-                                        .toTypedArray()
                                 }
                         }
+                    }
                 }
 
         }
@@ -78,7 +82,7 @@ internal class DepartmentRepository(private val connection: Connection) : Reposi
                                 val id = res.getInt("id")
 
                                 add(
-                                    app.department.Department(
+                                    Department(
                                         id,
                                         res.getString("title"),
                                         res.getString("faculty_id"),

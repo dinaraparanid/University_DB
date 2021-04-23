@@ -1,6 +1,6 @@
-package app.student
+package app.core.student
 
-import app.StringContent
+import app.core.StringContent
 
 internal data class Student(
     val id: Int,

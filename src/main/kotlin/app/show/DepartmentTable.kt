@@ -1,7 +1,7 @@
 package app.show
 
-import app.Database
-import app.department.Department
+import app.core.Database
+import app.core.department.Department
 
 internal class DepartmentTable : ContentTable<Department>(
     "Departments",

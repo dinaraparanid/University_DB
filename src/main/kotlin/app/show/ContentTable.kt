@@ -1,7 +1,7 @@
 package app.show
 
-import app.StringContent
-import java.awt.BorderLayout
+import app.core.StringContent
+import java.awt.*
 import java.awt.event.ActionEvent
 import javax.swing.*
 
@@ -12,12 +12,15 @@ internal abstract class ContentTable<T>(
 ) : JMenuItem()
         where T : StringContent {
     private val window = JFrame(title).apply {
+        bounds = Rectangle(400, 300, 300, 400)
         contentPane.add(
-            JTable(
-                content()
-                    .map { it.asStringArray() }
-                    .toTypedArray(),
-                params
+            JScrollPane(
+                JTable(
+                    content()
+                        .map { it.asStringArray() }
+                        .toTypedArray(),
+                    params
+                )
             ),
             BorderLayout.CENTER
         )

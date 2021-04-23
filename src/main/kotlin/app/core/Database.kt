@@ -1,12 +1,12 @@
-package app
+package app.core
 
-import app.department.DepartmentRepository
-import app.faculty.FacultyRepository
-import app.group.GroupRepository
-import app.speciality.SpecialityRepository
-import app.student.StudentRepository
-import app.subject.SubjectRepository
-import app.teacher.TeacherRepository
+import app.core.department.DepartmentRepository
+import app.core.faculty.FacultyRepository
+import app.core.group.GroupRepository
+import app.core.speciality.SpecialityRepository
+import app.core.student.StudentRepository
+import app.core.subject.SubjectRepository
+import app.core.teacher.TeacherRepository
 import org.sqlite.SQLiteDataSource
 import java.io.File
 

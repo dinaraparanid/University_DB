@@ -1,34 +1,35 @@
-package app.speciality
+package app.core.teacher
 
-import app.*
-import app.Repository.Arg
+import app.core.*
+import app.core.Repository.Arg
 import java.sql.Connection
 
-internal class SpecialityRepository(private val connection: Connection) : Repository<Speciality> {
+internal class TeacherRepository(private val connection: Connection) : Repository<Teacher> {
     companion object SQLCommands {
-        private const val all = "SELECT * FROM Speciality"
+        private const val all = "SELECT * FROM Teacher"
 
-        private const val filtered = "SELECT * FROM Speciality " +
+        private const val filtered = "SELECT * FROM Teacher " +
                 "WHERE id = ?"
 
-        private const val add = "INSERT INTO Speciality (id, title) " +
-                "VALUES (?, ?)"
+        private const val add = "INSERT INTO Teacher (id, f_name, s_name, m_name, info) " +
+                "VALUES (?, ?, ?, ?, ?)"
 
-        private const val update = "UPDATE Speciality SET " +
-                "title = ? " +
+        private const val update = "UPDATE Teacher SET " +
+                "f_name = ?, s_name = ?, m_name = ?, info = ? " +
                 "WHERE id = ?"
 
-        private const val remove = "DELETE FROM Speciality " +
-                "WHERE title = ?"
+        private const val remove = "DELETE FROM Teacher " +
+                "WHERE f_name = ? AND s_name = ? AND m_name = ?"
 
-        private const val param = "SELECT speciality_id FROM Teach_Spec " +
-                "WHERE teacher_id = ?"
+        private const val paramSpec = "SELECT teacher_id FROM Teach_Spec " +
+                "WHERE speciality_id = ?"
+
+        private const val paramSubj = "SELECT teacher_id FROM Teach_Subj " +
+                "WHERE subject_id = ?"
     }
 
-    private val self = "Speciality"
-
     override fun all(id: Int, mod: Int) = connection
-        .prepareStatement(param)
+        .prepareStatement(if (mod == 0) paramSpec else paramSubj)
         .apply { setInt(1, id) }
         .use { stm ->
             stm
@@ -38,20 +39,23 @@ internal class SpecialityRepository(private val connection: Connection) : Reposi
 
                     connection
                         .prepareStatement(filtered)
-                        .apply { setInt(1, res.getInt("speciality_id")) }
+                        .apply { setInt(1, res.getInt("teacher_id")) }
                         .use { stm ->
                             stm
                                 .executeQuery()
                                 .use { res ->
-                                    mutableListOf<Speciality>()
+                                    mutableListOf<Teacher>()
                                         .apply {
                                             while (res.next()) {
                                                 add(
-                                                    Speciality(
+                                                    Teacher(
                                                         res.getInt("id"),
-                                                        res.getString("title"),
+                                                        res.getString("f_name"),
+                                                        res.getString("s_name"),
+                                                        res.getString("m_name"),
+                                                        res.getString("info"),
                                                         arrayOf(),
-                                                        arrayOf()
+                                                        arrayOf(),
                                                     )
                                                 )
                                             }
@@ -69,17 +73,20 @@ internal class SpecialityRepository(private val connection: Connection) : Reposi
             stm
                 .executeQuery(all)
                 .use { res ->
-                    mutableListOf<Speciality>()
+                    mutableListOf<Teacher>()
                         .apply {
                             while (res.next()) {
                                 val id = res.getInt("id")
 
                                 add(
-                                    Speciality(
+                                    Teacher(
                                         id,
-                                        res.getString("title"),
-                                        Database.groupRepository.all(id),
-                                        Database.teacherRepository.all(id)
+                                        res.getString("f_name"),
+                                        res.getString("s_name"),
+                                        res.getString("m_name"),
+                                        res.getString("info"),
+                                        Database.specialityRepository.all(id),
+                                        Database.subjectRepository.all(id),
                                     )
                                 )
                             }
@@ -92,7 +99,10 @@ internal class SpecialityRepository(private val connection: Connection) : Reposi
         .prepareStatement(add)
         .apply {
             setInt(1, args[0].parseIntArg())    // id
-            setString(2, args[1].parseStrArg()) // title
+            setString(2, args[1].parseStrArg()) // first name
+            setString(3, args[2].parseStrArg()) // second name
+            setString(4, args[3].parseStrArg()) // middle name
+            setString(5, args[4].parseStrArg()) // info
         }
         .use { stm ->
             try {
@@ -115,9 +125,15 @@ internal class SpecialityRepository(private val connection: Connection) : Reposi
             }
         }
 
-    override fun remove(vararg args: Arg) = connection
-        .prepareStatement(remove)
-        .apply { setString(1, args[0].parseStrArg()) } // title
+    override fun update(vararg args: Arg) = connection
+        .prepareStatement(update)
+        .apply {
+            setString(1, args[0].parseStrArg()) // first name
+            setString(2, args[1].parseStrArg()) // second name
+            setString(3, args[2].parseStrArg()) // middle name
+            setString(4, args[3].parseStrArg()) // info
+            setInt(5, args[4].parseIntArg())    // id
+        }
         .use { stm ->
             try {
                 stm.execute().run {}
@@ -125,7 +141,7 @@ internal class SpecialityRepository(private val connection: Connection) : Reposi
                 /*JOptionPane.showMessageDialog(
                     null,
                     "Success",
-                    "$self removed",
+                    "$self updated",
                     JOptionPane.INFORMATION_MESSAGE
                 )*/
             } catch (e: Exception) {
@@ -139,11 +155,12 @@ internal class SpecialityRepository(private val connection: Connection) : Reposi
             }
         }
 
-    override fun update(vararg args: Arg) = connection
-        .prepareStatement(update)
+    override fun remove(vararg args: Arg) = connection
+        .prepareStatement(remove)
         .apply {
-            setString(1, args[0].parseStrArg()) // title
-            setInt(2, args[1].parseIntArg())    // id
+            setString(1, args[0].parseStrArg()) // first name
+            setString(2, args[1].parseStrArg()) // second name
+            setString(3, args[2].parseStrArg()) // middle name
         }
         .use { stm ->
             try {
@@ -152,7 +169,7 @@ internal class SpecialityRepository(private val connection: Connection) : Reposi
                 /*JOptionPane.showMessageDialog(
                     null,
                     "Success",
-                    "$self updated",
+                    "$self removed",
                     JOptionPane.INFORMATION_MESSAGE
                 )*/
             } catch (e: Exception) {

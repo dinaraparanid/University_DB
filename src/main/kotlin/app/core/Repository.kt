@@ -1,6 +1,4 @@
-package app
-
-import java.lang.IllegalArgumentException
+package app.core
 
 internal interface Repository<T> {
     sealed class Arg {

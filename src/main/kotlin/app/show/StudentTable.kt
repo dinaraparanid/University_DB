@@ -1,7 +1,7 @@
 package app.show
 
-import app.Database
-import app.student.Student
+import app.core.Database
+import app.core.student.Student
 
 internal class StudentTable : ContentTable<Student>(
     "Students",

@@ -1,7 +1,7 @@
 package app.show
 
-import app.Database
-import app.speciality.Speciality
+import app.core.Database
+import app.core.speciality.Speciality
 
 internal class SpecialityTable : ContentTable<Speciality>(
     "Specialities",

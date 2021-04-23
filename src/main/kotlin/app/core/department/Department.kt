@@ -1,25 +1,26 @@
-package app.group
+package app.core.department
 
-import app.StringContent
-import app.student.Student
+import app.core.StringContent
+import app.core.subject.Subject
 
-internal data class Group(
+internal data class Department(
     val id: Int,
     val title: String,
-    val specialityId: Int,
-    val students: Array<Student>
+    val facultyId: String,
+    val subjects: Array<Subject>
 ) : StringContent {
     override fun equals(other: Any?) = when {
         this === other -> true
         javaClass != other?.javaClass -> false
+
         else -> {
-            other as Group
+            other as Department
 
             when {
                 id != other.id -> false
                 title != other.title -> false
-                specialityId != other.specialityId -> false
-                !students.contentEquals(other.students) -> false
+                facultyId != other.facultyId -> false
+                !subjects.contentEquals(other.subjects) -> false
                 else -> true
             }
         }
@@ -28,8 +29,8 @@ internal data class Group(
     override fun hashCode(): Int {
         var result = id
         result = 31 * result + title.hashCode()
-        result = 31 * result + specialityId
-        result = 31 * result + students.contentHashCode()
+        result = 31 * result + facultyId.hashCode()
+        result = 31 * result + subjects.contentHashCode()
         return result
     }
 

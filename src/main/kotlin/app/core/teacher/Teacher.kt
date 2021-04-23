@@ -1,8 +1,8 @@
-package app.teacher
+package app.core.teacher
 
-import app.StringContent
-import app.speciality.Speciality
-import app.subject.Subject
+import app.core.StringContent
+import app.core.speciality.Speciality
+import app.core.subject.Subject
 
 internal data class Teacher(
     val id: Int,
