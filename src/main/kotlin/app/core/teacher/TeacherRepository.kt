@@ -7,7 +7,7 @@ import arrow.core.None
 import arrow.core.Some
 import java.sql.Connection
 
-internal class TeacherRepository(private val connection: Connection) : Repository<Teacher> {
+internal class TeacherRepository(private val connection: Connection) : Repository<Teacher>(connection) {
     companion object SQLCommands {
         private const val all = "SELECT * FROM Teacher"
 
@@ -100,66 +100,8 @@ internal class TeacherRepository(private val connection: Connection) : Repositor
                 }
         }
 
-    override fun add(vararg args: Either<String, Int>) = connection
-        .prepareStatement(add)
-        .apply {
-            setValOrNull(1, args[0]) // id
-            setValOrNull(2, args[1]) // first name
-            setValOrNull(3, args[2]) // second name
-            setValOrNull(4, args[3]) // middle name
-            setValOrNull(5, args[4]) // info
-        }
-        .use { stm ->
-            try {
-                stm.execute()
-                Some(Unit)
-            } catch (e: Exception) {
-                None
-            }
-        }
-
-    override fun update(vararg args: Either<String, Int>) = connection
-        .prepareStatement(update)
-        .apply {
-            setValOrNull(1, args[0]) // first name
-            setValOrNull(2, args[1]) // second name
-            setValOrNull(3, args[2]) // middle name
-            setValOrNull(4, args[3]) // info
-            setValOrNull(5, args[4]) // id
-        }
-        .use { stm ->
-            try {
-                stm.execute()
-                Some(Unit)
-            } catch (e: Exception) {
-                None
-            }
-        }
-
-    override fun remove(vararg args: Either<String, Int>) = connection
-        .prepareStatement(remove)
-        .apply {
-            setValOrNull(1, args[0]) // first name
-            setValOrNull(2, args[1]) // second name
-            setValOrNull(3, args[2]) // middle name
-        }
-        .use { stm ->
-            try {
-                stm.execute()
-                Some(Unit)
-            } catch (e: Exception) {
-                None
-            }
-        }
-
-    override fun nextId() = connection
-        .createStatement()
-        .use { stm ->
-            stm
-                .executeQuery(maxId)
-                .use { res ->
-                    res.next()
-                    res.getInt("id")
-                }
-        }
+    fun add(vararg args: Either<String, Int>) = action(add, *args)
+    fun remove(vararg args: Either<String, Int>) = action(remove, *args)
+    fun update(vararg args: Either<String, Int>) = action(update, *args)
+    fun nextId() = nextId(maxId)
 }

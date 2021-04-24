@@ -1,13 +1,12 @@
 package app.add
 
-import java.awt.BorderLayout
 import java.awt.Rectangle
 import java.awt.event.ActionEvent
 import javax.swing.*
 
 internal abstract class AbstractAdd(
     title: String,
-    private vararg val args: String
+    vararg args: String
 ) : JMenuItem() {
     val ok = JButton("Ok")
     val texts = mutableListOf<JTextField>()

@@ -1,13 +1,10 @@
 package app.core.faculty
 
 import app.core.*
-import app.setValOrNull
 import arrow.core.Either
-import arrow.core.None
-import arrow.core.Some
 import java.sql.Connection
 
-internal class FacultyRepository(private val connection: Connection) : Repository<Faculty> {
+internal class FacultyRepository(private val connection: Connection) : Repository<Faculty>(connection) {
     companion object SQLCommands {
         private const val all = "SELECT * FROM Faculty"
 
@@ -50,56 +47,8 @@ internal class FacultyRepository(private val connection: Connection) : Repositor
                 }
         }
 
-    override fun add(vararg args: Either<String, Int>) = connection
-        .prepareStatement(add)
-        .apply {
-            setValOrNull(1, args[0]) // id
-            setValOrNull(2, args[1]) // title
-        }
-        .use { stm ->
-            try {
-                stm.execute()
-                Some(Unit)
-            } catch (e: Exception) {
-                None
-            }
-        }
-
-    override fun update(vararg args: Either<String, Int>) = connection
-        .prepareStatement(update)
-        .apply {
-            setValOrNull(1, args[0]) // title
-            setValOrNull(2, args[1]) // id
-        }
-        .use { stm ->
-            try {
-                stm.execute()
-                Some(Unit)
-            } catch (e: Exception) {
-                None
-            }
-        }
-
-    override fun remove(vararg args: Either<String, Int>) = connection
-        .prepareStatement(remove)
-        .apply { setValOrNull(1, args[0]) } // title
-        .use { stm ->
-            try {
-                stm.execute()
-                Some(Unit)
-            } catch (e: Exception) {
-                None
-            }
-        }
-
-    override fun nextId() = connection
-        .createStatement()
-        .use { stm ->
-            stm
-                .executeQuery(maxId)
-                .use { res ->
-                    res.next()
-                    res.getInt("id")
-                }
-        }
+    fun add(vararg args: Either<String, Int>?) = action(add, *args)
+    fun remove(vararg args: Either<String, Int>) = action(remove, *args)
+    fun update(vararg args: Either<String, Int>) = action(update, *args)
+    fun nextId() = nextId(maxId)
 }
