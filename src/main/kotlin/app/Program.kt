@@ -1,6 +1,7 @@
 package app
 
 import app.show.*
+import app.add.*
 import java.awt.*
 import javax.swing.*
 
@@ -17,7 +18,15 @@ object Program {
         add(FacultyTable())
     }
 
-    private val addMenu = JMenu("Add")
+    private val addMenu = JMenu("Add").apply {
+        add(StudentAdd())
+        add(GroupAdd())
+        add(SpecialityAdd())
+        add(TeacherAdd())
+        add(SubjectAdd())
+        add(DepartmentAdd())
+        add(FacultyAdd())
+    }
 
 
     private val removeMenu = JMenu("Remove")

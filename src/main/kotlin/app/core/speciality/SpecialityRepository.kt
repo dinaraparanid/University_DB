@@ -1,7 +1,10 @@
 package app.core.speciality
 
 import app.core.*
-import app.core.Repository.Arg
+import app.setValOrNull
+import arrow.core.Either
+import arrow.core.None
+import arrow.core.Some
 import java.sql.Connection
 
 internal class SpecialityRepository(private val connection: Connection) : Repository<Speciality> {
@@ -10,6 +13,8 @@ internal class SpecialityRepository(private val connection: Connection) : Reposi
 
         private const val filtered = "SELECT * FROM Speciality " +
                 "WHERE id = ?"
+
+        private const val maxId = "SELECT MAX(id) FROM Speciality"
 
         private const val add = "INSERT INTO Speciality (id, title) " +
                 "VALUES (?, ?)"
@@ -86,81 +91,56 @@ internal class SpecialityRepository(private val connection: Connection) : Reposi
                 }
         }
 
-    override fun add(vararg args: Arg) = connection
+    override fun add(vararg args: Either<String, Int>) = connection
         .prepareStatement(add)
         .apply {
-            setInt(1, args[0].parseIntArg())    // id
-            setString(2, args[1].parseStrArg()) // title
+            setValOrNull(1, args[0]) // id
+            setValOrNull(2, args[1]) // title
         }
         .use { stm ->
             try {
-                stm.execute().run {}
-
-                /*JOptionPane.showMessageDialog(
-                    null,
-                    "Success",
-                    "$self added",
-                    JOptionPane.INFORMATION_MESSAGE
-                )*/
+                stm.execute()
+                Some(Unit)
             } catch (e: Exception) {
-                null
-                /*JOptionPane.showMessageDialog(
-                    null,
-                    "Something went wrong",
-                    "Failure",
-                    JOptionPane.INFORMATION_MESSAGE
-                )*/
+                None
             }
         }
 
-    override fun remove(vararg args: Arg) = connection
+    override fun remove(vararg args: Either<String, Int>) = connection
         .prepareStatement(remove)
-        .apply { setString(1, args[0].parseStrArg()) } // title
+        .apply { setValOrNull(1, args[0]) } // title
         .use { stm ->
             try {
-                stm.execute().run {}
-
-                /*JOptionPane.showMessageDialog(
-                    null,
-                    "Success",
-                    "$self removed",
-                    JOptionPane.INFORMATION_MESSAGE
-                )*/
+                stm.execute()
+                Some(Unit)
             } catch (e: Exception) {
-                null
-                /*JOptionPane.showMessageDialog(
-                    null,
-                    "Something went wrong",
-                    "Failure",
-                    JOptionPane.INFORMATION_MESSAGE
-                )*/
+                None
             }
         }
 
-    override fun update(vararg args: Arg) = connection
+    override fun update(vararg args: Either<String, Int>) = connection
         .prepareStatement(update)
         .apply {
-            setString(1, args[0].parseStrArg()) // title
-            setInt(2, args[1].parseIntArg())    // id
+            setValOrNull(1, args[0]) // title
+            setValOrNull(2, args[1]) // id
         }
         .use { stm ->
             try {
-                stm.execute().run {}
-
-                /*JOptionPane.showMessageDialog(
-                    null,
-                    "Success",
-                    "$self updated",
-                    JOptionPane.INFORMATION_MESSAGE
-                )*/
+                stm.execute()
+                Some(Unit)
             } catch (e: Exception) {
-                null
-                /*JOptionPane.showMessageDialog(
-                    null,
-                    "Something went wrong",
-                    "Failure",
-                    JOptionPane.INFORMATION_MESSAGE
-                )*/
+                None
             }
+        }
+
+    override fun nextId() = connection
+        .createStatement()
+        .use { stm ->
+            stm
+                .executeQuery(maxId)
+                .use { res ->
+                    res.next()
+                    res.getInt("id")
+                }
         }
 }

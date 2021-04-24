@@ -1,7 +1,10 @@
 package app.core.teacher
 
 import app.core.*
-import app.core.Repository.Arg
+import app.setValOrNull
+import arrow.core.Either
+import arrow.core.None
+import arrow.core.Some
 import java.sql.Connection
 
 internal class TeacherRepository(private val connection: Connection) : Repository<Teacher> {
@@ -10,6 +13,8 @@ internal class TeacherRepository(private val connection: Connection) : Repositor
 
         private const val filtered = "SELECT * FROM Teacher " +
                 "WHERE id = ?"
+
+        private const val maxId = "SELECT MAX(id) FROM Teacher"
 
         private const val add = "INSERT INTO Teacher (id, f_name, s_name, m_name, info) " +
                 "VALUES (?, ?, ?, ?, ?)"
@@ -95,91 +100,66 @@ internal class TeacherRepository(private val connection: Connection) : Repositor
                 }
         }
 
-    override fun add(vararg args: Arg) = connection
+    override fun add(vararg args: Either<String, Int>) = connection
         .prepareStatement(add)
         .apply {
-            setInt(1, args[0].parseIntArg())    // id
-            setString(2, args[1].parseStrArg()) // first name
-            setString(3, args[2].parseStrArg()) // second name
-            setString(4, args[3].parseStrArg()) // middle name
-            setString(5, args[4].parseStrArg()) // info
+            setValOrNull(1, args[0]) // id
+            setValOrNull(2, args[1]) // first name
+            setValOrNull(3, args[2]) // second name
+            setValOrNull(4, args[3]) // middle name
+            setValOrNull(5, args[4]) // info
         }
         .use { stm ->
             try {
-                stm.execute().run {}
-
-                /*JOptionPane.showMessageDialog(
-                    null,
-                    "Success",
-                    "$self added",
-                    JOptionPane.INFORMATION_MESSAGE
-                )*/
+                stm.execute()
+                Some(Unit)
             } catch (e: Exception) {
-                null
-                /*JOptionPane.showMessageDialog(
-                    null,
-                    "Something went wrong",
-                    "Failure",
-                    JOptionPane.INFORMATION_MESSAGE
-                )*/
+                None
             }
         }
 
-    override fun update(vararg args: Arg) = connection
+    override fun update(vararg args: Either<String, Int>) = connection
         .prepareStatement(update)
         .apply {
-            setString(1, args[0].parseStrArg()) // first name
-            setString(2, args[1].parseStrArg()) // second name
-            setString(3, args[2].parseStrArg()) // middle name
-            setString(4, args[3].parseStrArg()) // info
-            setInt(5, args[4].parseIntArg())    // id
+            setValOrNull(1, args[0]) // first name
+            setValOrNull(2, args[1]) // second name
+            setValOrNull(3, args[2]) // middle name
+            setValOrNull(4, args[3]) // info
+            setValOrNull(5, args[4]) // id
         }
         .use { stm ->
             try {
-                stm.execute().run {}
-
-                /*JOptionPane.showMessageDialog(
-                    null,
-                    "Success",
-                    "$self updated",
-                    JOptionPane.INFORMATION_MESSAGE
-                )*/
+                stm.execute()
+                Some(Unit)
             } catch (e: Exception) {
-                null
-                /*JOptionPane.showMessageDialog(
-                    null,
-                    "Something went wrong",
-                    "Failure",
-                    JOptionPane.INFORMATION_MESSAGE
-                )*/
+                None
             }
         }
 
-    override fun remove(vararg args: Arg) = connection
+    override fun remove(vararg args: Either<String, Int>) = connection
         .prepareStatement(remove)
         .apply {
-            setString(1, args[0].parseStrArg()) // first name
-            setString(2, args[1].parseStrArg()) // second name
-            setString(3, args[2].parseStrArg()) // middle name
+            setValOrNull(1, args[0]) // first name
+            setValOrNull(2, args[1]) // second name
+            setValOrNull(3, args[2]) // middle name
         }
         .use { stm ->
             try {
-                stm.execute().run {}
-
-                /*JOptionPane.showMessageDialog(
-                    null,
-                    "Success",
-                    "$self removed",
-                    JOptionPane.INFORMATION_MESSAGE
-                )*/
+                stm.execute()
+                Some(Unit)
             } catch (e: Exception) {
-                null
-                /*JOptionPane.showMessageDialog(
-                    null,
-                    "Something went wrong",
-                    "Failure",
-                    JOptionPane.INFORMATION_MESSAGE
-                )*/
+                None
             }
+        }
+
+    override fun nextId() = connection
+        .createStatement()
+        .use { stm ->
+            stm
+                .executeQuery(maxId)
+                .use { res ->
+                    res.next()
+                    res.getInt("id")
+                }
         }
 }

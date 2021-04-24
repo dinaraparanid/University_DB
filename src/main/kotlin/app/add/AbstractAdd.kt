@@ -1,5 +1,6 @@
 package app.add
 
+import java.awt.BorderLayout
 import java.awt.Rectangle
 import java.awt.event.ActionEvent
 import javax.swing.*
@@ -8,7 +9,10 @@ internal abstract class AbstractAdd(
     title: String,
     private vararg val args: String
 ) : JMenuItem() {
-    private val window = JFrame(title).apply {
+    val ok = JButton("Ok")
+    val texts = mutableListOf<JTextField>()
+
+    val window = JFrame(title).apply {
         bounds = Rectangle(400, 300, 300, 400)
         val lyt = SpringLayout()
         layout = lyt
@@ -24,7 +28,11 @@ internal abstract class AbstractAdd(
 
             contentPane.add(label)
             contentPane.add(inp)
+
+            texts.add(inp)
         }
+
+        contentPane.add(ok)
     }
 
     init {
