@@ -1,6 +1,7 @@
 package app.core.faculty
 
-import app.core.*
+import app.core.Database
+import app.core.polymorphism.Repository
 import arrow.core.Either
 import java.sql.Connection
 
@@ -8,7 +9,7 @@ internal class FacultyRepository(private val connection: Connection) : Repositor
     companion object SQLCommands {
         private const val all = "SELECT * FROM Faculty"
 
-        private const val maxId = "SELECT MAX(id) FROM Faculty"
+        private const val maxId = "SELECT MAX(id) as max_id FROM Faculty"
 
         private const val add = "INSERT INTO Faculty (id, title) " +
                 "VALUES (?, ?)"
@@ -20,8 +21,6 @@ internal class FacultyRepository(private val connection: Connection) : Repositor
         private const val remove = "DELETE FROM Faculty " +
                 "WHERE title = ?"
     }
-
-    override fun all(id: Int, mod: Int) = arrayOf<Faculty>()
 
     override fun all() = connection
         .createStatement()
@@ -38,7 +37,7 @@ internal class FacultyRepository(private val connection: Connection) : Repositor
                                     Faculty(
                                         id,
                                         res.getString("title"),
-                                        Database.departmentRepository.all(id)
+                                        Database.departmentRepository.getById(id)
                                     )
                                 )
                             }

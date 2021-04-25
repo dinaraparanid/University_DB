@@ -1,14 +1,17 @@
 package app.core.student
 
-import app.core.Repository
+import app.core.polymorphism.GetById
+import app.core.polymorphism.Repository
 import arrow.core.Either
 import java.sql.Connection
 
-internal class StudentRepository(private val connection: Connection) : Repository<Student>(connection) {
+internal class StudentRepository(private val connection: Connection) :
+    Repository<Student>(connection),
+    GetById<Student> {
     companion object SQLCommands {
         private const val all = "SELECT * FROM Student"
 
-        private const val maxId = "SELECT MAX(id) FROM Student"
+        private const val maxId = "SELECT MAX(id) as max_id FROM Student"
 
         private const val add = "INSERT INTO Student (id, f_name, s_name, m_name, group_id, info) " +
                 "VALUES (?, ?, ?, ?, ?, ?)"
@@ -24,7 +27,7 @@ internal class StudentRepository(private val connection: Connection) : Repositor
                 "WHERE group_id = ?"
     }
 
-    override fun all(id: Int, mod: Int) = connection
+    override fun getById(id: Int, mod: Int) = connection
         .prepareStatement(param)
         .apply { setInt(1, id) }
         .use { stm ->
@@ -77,7 +80,7 @@ internal class StudentRepository(private val connection: Connection) : Repositor
         }
 
     fun add(vararg args: Either<String, Int>) = action(add, args[0], args[1], args[2], args[3], null, args[4])
-    fun remove(vararg args: Either<String, Int>) = action(remove, *args)
+    fun remove(vararg args: Either<String, Int>?) = action(remove, *args)
     fun update(vararg args: Either<String, Int>) = action(update, *args)
     fun nextId() = nextId(maxId)
 }

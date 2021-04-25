@@ -1,6 +1,6 @@
 package app.core.subject
 
-import app.core.StringContent
+import app.core.polymorphism.StringContent
 import app.core.department.Department
 import app.core.teacher.Teacher
 

@@ -1,20 +1,21 @@
 package app.core.teacher
 
-import app.core.*
-import app.setValOrNull
+import app.core.Database
+import app.core.polymorphism.GetById
+import app.core.polymorphism.Repository
 import arrow.core.Either
-import arrow.core.None
-import arrow.core.Some
 import java.sql.Connection
 
-internal class TeacherRepository(private val connection: Connection) : Repository<Teacher>(connection) {
+internal class TeacherRepository(private val connection: Connection) :
+    Repository<Teacher>(connection),
+    GetById<Teacher> {
     companion object SQLCommands {
         private const val all = "SELECT * FROM Teacher"
 
         private const val filtered = "SELECT * FROM Teacher " +
                 "WHERE id = ?"
 
-        private const val maxId = "SELECT MAX(id) FROM Teacher"
+        private const val maxId = "SELECT MAX(id) as max_id FROM Teacher"
 
         private const val add = "INSERT INTO Teacher (id, f_name, s_name, m_name, info) " +
                 "VALUES (?, ?, ?, ?, ?)"
@@ -33,7 +34,7 @@ internal class TeacherRepository(private val connection: Connection) : Repositor
                 "WHERE subject_id = ?"
     }
 
-    override fun all(id: Int, mod: Int) = connection
+    override fun getById(id: Int, mod: Int) = connection
         .prepareStatement(if (mod == 0) paramSpec else paramSubj)
         .apply { setInt(1, id) }
         .use { stm ->
@@ -90,8 +91,8 @@ internal class TeacherRepository(private val connection: Connection) : Repositor
                                         res.getString("s_name"),
                                         res.getString("m_name"),
                                         res.getString("info"),
-                                        Database.specialityRepository.all(id),
-                                        Database.subjectRepository.all(id),
+                                        Database.specialityRepository.getById(id),
+                                        Database.subjectRepository.getById(id),
                                     )
                                 )
                             }

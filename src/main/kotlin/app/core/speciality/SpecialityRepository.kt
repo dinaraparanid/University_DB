@@ -1,17 +1,24 @@
 package app.core.speciality
 
-import app.core.*
+import app.core.Database
+import app.core.polymorphism.*
 import arrow.core.Either
 import java.sql.Connection
 
-internal class SpecialityRepository(private val connection: Connection) : Repository<Speciality>(connection) {
+internal class SpecialityRepository(private val connection: Connection) :
+    Repository<Speciality>(connection),
+    GetById<Speciality>,
+    GetIdByTitle {
     companion object SQLCommands {
         private const val all = "SELECT * FROM Speciality"
 
-        private const val filtered = "SELECT * FROM Speciality " +
+        private const val filteredId = "SELECT * FROM Speciality " +
                 "WHERE id = ?"
 
-        private const val maxId = "SELECT MAX(id) FROM Speciality"
+        private const val filteredTitle = "SELECT id FROM Speciality " +
+                "WHERE title = ?"
+
+        private const val maxId = "SELECT MAX(id) as max_id FROM Speciality"
 
         private const val add = "INSERT INTO Speciality (id, title) " +
                 "VALUES (?, ?)"
@@ -27,7 +34,7 @@ internal class SpecialityRepository(private val connection: Connection) : Reposi
                 "WHERE teacher_id = ?"
     }
 
-    override fun all(id: Int, mod: Int) = connection
+    override fun getById(id: Int, mod: Int) = connection
         .prepareStatement(param)
         .apply { setInt(1, id) }
         .use { stm ->
@@ -37,7 +44,7 @@ internal class SpecialityRepository(private val connection: Connection) : Reposi
                     res.next()
 
                     connection
-                        .prepareStatement(filtered)
+                        .prepareStatement(filteredId)
                         .apply { setInt(1, res.getInt("speciality_id")) }
                         .use { stm ->
                             stm
@@ -63,6 +70,8 @@ internal class SpecialityRepository(private val connection: Connection) : Reposi
 
         }
 
+    fun getIdByTitle(title: String) = getIdByTitle(filteredTitle, title, connection)
+
     override fun all() = connection
         .createStatement()
         .use { stm ->
@@ -78,8 +87,8 @@ internal class SpecialityRepository(private val connection: Connection) : Reposi
                                     Speciality(
                                         id,
                                         res.getString("title"),
-                                        Database.groupRepository.all(id),
-                                        Database.teacherRepository.all(id)
+                                        Database.groupRepository.getById(id),
+                                        Database.teacherRepository.getById(id)
                                     )
                                 )
                             }

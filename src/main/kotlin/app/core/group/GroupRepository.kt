@@ -1,14 +1,21 @@
 package app.core.group
 
-import app.core.*
+import app.core.Database
+import app.core.polymorphism.*
 import arrow.core.Either
 import java.sql.Connection
 
-internal class GroupRepository(private val connection: Connection) : Repository<Group>(connection) {
+internal class GroupRepository(private val connection: Connection) :
+    Repository<Group>(connection),
+    GetById<Group>,
+    GetIdByTitle {
     companion object SQLCommands {
         private const val all = "SELECT * FROM Groups"
 
-        private const val maxId = "SELECT MAX(id) FROM Groups"
+        private const val maxId = "SELECT MAX(id) as max_id FROM Groups"
+
+        private const val filteredTitle = "SELECT id FROM Speciality " +
+                "WHERE title = ?"
 
         private const val add = "INSERT INTO Groups (id, title, speciality_id) " +
                 "VALUES (?, ?, ?)"
@@ -24,7 +31,7 @@ internal class GroupRepository(private val connection: Connection) : Repository<
                 "WHERE speciality_id = ?"
     }
 
-    override fun all(id: Int, mod: Int) = connection
+    override fun getById(id: Int, mod: Int) = connection
         .prepareStatement(param)
         .apply { setInt(1, id) }
         .use { stm ->
@@ -49,6 +56,8 @@ internal class GroupRepository(private val connection: Connection) : Repository<
 
         }
 
+    fun getIdByTitle(title: String) = getIdByTitle(filteredTitle, title, connection)
+
     override fun all() = connection
         .createStatement()
         .use { stm ->
@@ -65,7 +74,7 @@ internal class GroupRepository(private val connection: Connection) : Repository<
                                         id,
                                         res.getString("title"),
                                         res.getInt("speciality_id"),
-                                        Database.studentRepository.all(id)
+                                        Database.studentRepository.getById(id)
                                     )
                                 )
                             }
@@ -75,7 +84,7 @@ internal class GroupRepository(private val connection: Connection) : Repository<
         }
 
     fun add(vararg args: Either<String, Int>) = action(add, args[0], args[1], null)
-    fun remove(vararg args: Either<String, Int>) = action(remove, *args)
+    fun remove(vararg args: Either<String, Int>?) = action(remove, *args)
     fun update(vararg args: Either<String, Int>) = action(update, *args)
     fun nextId() = nextId(maxId)
 }

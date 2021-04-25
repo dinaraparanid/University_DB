@@ -1,6 +1,6 @@
 package app.core.group
 
-import app.core.StringContent
+import app.core.polymorphism.StringContent
 import app.core.student.Student
 
 internal data class Group(

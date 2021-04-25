@@ -1,6 +1,6 @@
 package app.core.department
 
-import app.core.StringContent
+import app.core.polymorphism.StringContent
 import app.core.subject.Subject
 
 internal data class Department(

@@ -1,6 +1,6 @@
 package app.core.student
 
-import app.core.StringContent
+import app.core.polymorphism.StringContent
 
 internal data class Student(
     val id: Int,

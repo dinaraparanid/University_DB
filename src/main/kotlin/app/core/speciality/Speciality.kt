@@ -1,6 +1,6 @@
 package app.core.speciality
 
-import app.core.StringContent
+import app.core.polymorphism.StringContent
 import app.core.group.Group
 import app.core.teacher.Teacher
 

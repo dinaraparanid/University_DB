@@ -1,17 +1,21 @@
 package app.core.department
 
-import app.core.*
+import app.core.Database
+import app.core.polymorphism.GetById
+import app.core.polymorphism.Repository
 import arrow.core.Either
 import java.sql.Connection
 
-internal class DepartmentRepository(private val connection: Connection) : Repository<Department>(connection) {
+internal class DepartmentRepository(private val connection: Connection) :
+    Repository<Department>(connection),
+    GetById<Department> {
     companion object SQLCommands {
         private const val all = "SELECT * FROM Department"
 
         private const val filtered = "SELECT * FROM Department " +
                 "WHERE id = ?"
 
-        private const val maxId = "SELECT MAX(id) FROM Department"
+        private const val maxId = "SELECT MAX(id) as max_id FROM Department"
 
         private const val add = "INSERT INTO Department (id, title, faculty_id) " +
                 "VALUES (?, ?, ?)"
@@ -21,7 +25,7 @@ internal class DepartmentRepository(private val connection: Connection) : Reposi
                 "WHERE id = ?"
 
         private const val remove = "DELETE FROM Department " +
-                "WHERE title = ? AND faculty_id = ?"
+                "WHERE title = ?"
 
         private const val paramFac = "SELECT id FROM Department " +
                 "WHERE faculty_id = ?"
@@ -30,7 +34,7 @@ internal class DepartmentRepository(private val connection: Connection) : Reposi
                 "WHERE subject_id = ?"
     }
 
-    override fun all(id: Int, mod: Int) = connection
+    override fun getById(id: Int, mod: Int) = connection
         .prepareStatement(if (mod == 0) paramFac else paramSubj)
         .apply { setInt(1, id) }
         .use { stm ->
@@ -88,7 +92,7 @@ internal class DepartmentRepository(private val connection: Connection) : Reposi
                                         id,
                                         res.getString("title"),
                                         res.getString("faculty_id"),
-                                        Database.subjectRepository.all(id, 1)
+                                        Database.subjectRepository.getById(id, 1)
                                     )
                                 )
                             }

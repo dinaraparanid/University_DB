@@ -1,7 +1,8 @@
 package app
 
 import app.show.*
-import app.add.*
+import app.change.add.*
+import app.change.remove.*
 import java.awt.*
 import javax.swing.*
 
@@ -29,7 +30,16 @@ object Program {
     }
 
 
-    private val removeMenu = JMenu("Remove")
+    private val removeMenu = JMenu("Remove").apply {
+        add(StudentRemove())
+        add(GroupRemove())
+        add(SpecialityRemove())
+        add(TeacherRemove())
+        add(SubjectRemove())
+        add(DepartmentRemove())
+        add(FacultyRemove())
+    }
+
     private val updateMenu = JMenu("Update")
 
     private val frame = JFrame("University Database").also { frame ->

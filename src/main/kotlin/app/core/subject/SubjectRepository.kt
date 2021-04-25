@@ -1,17 +1,21 @@
 package app.core.subject
 
-import app.core.*
+import app.core.Database
+import app.core.polymorphism.GetById
+import app.core.polymorphism.Repository
 import arrow.core.Either
 import java.sql.Connection
 
-internal class SubjectRepository(private val connection: Connection) : Repository<Subject>(connection) {
+internal class SubjectRepository(private val connection: Connection) :
+    Repository<Subject>(connection),
+    GetById<Subject> {
     companion object SQLCommands {
         private const val all = "SELECT * FROM Subject"
 
         private const val filtered = "SELECT * FROM Subject " +
                 "WHERE id = ?"
 
-        private const val maxId = "SELECT MAX(id) FROM Subject"
+        private const val maxId = "SELECT MAX(id) as max_id FROM Subject"
 
         private const val add = "INSERT INTO Subject (id, title) " +
                 "VALUES (?, ?)"
@@ -30,7 +34,7 @@ internal class SubjectRepository(private val connection: Connection) : Repositor
                 "WHERE subject_id = ?"
     }
 
-    override fun all(id: Int, mod: Int) = connection
+    override fun getById(id: Int, mod: Int) = connection
         .prepareStatement(if (mod == 0) paramTeach else paramDep)
         .apply { setInt(1, id) }
         .use { stm ->
@@ -81,8 +85,8 @@ internal class SubjectRepository(private val connection: Connection) : Repositor
                                     Subject(
                                         id,
                                         res.getString("title"),
-                                        Database.teacherRepository.all(id, 1),
-                                        Database.departmentRepository.all(id)
+                                        Database.teacherRepository.getById(id, 1),
+                                        Database.departmentRepository.getById(id)
                                     )
                                 )
                             }
