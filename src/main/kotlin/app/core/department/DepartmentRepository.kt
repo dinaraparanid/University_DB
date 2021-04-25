@@ -25,7 +25,7 @@ internal class DepartmentRepository(private val connection: Connection) :
                 "WHERE id = ?"
 
         private const val remove = "DELETE FROM Department " +
-                "WHERE title = ?"
+                "WHERE id = ?"
 
         private const val paramFac = "SELECT id FROM Department " +
                 "WHERE faculty_id = ?"
@@ -102,7 +102,7 @@ internal class DepartmentRepository(private val connection: Connection) :
         }
 
     fun add(vararg args: Either<String, Int>?) = action(add, args[0], args[1], null)
-    fun remove(vararg args: Either<String, Int>) = action(remove, *args)
+    fun remove(id: Int) = action(remove, Either.Right(id))
     fun update(vararg args: Either<String, Int>) = action(update, *args)
     fun nextId() = nextId(maxId)
 }

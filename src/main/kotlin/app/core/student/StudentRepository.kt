@@ -21,7 +21,7 @@ internal class StudentRepository(private val connection: Connection) :
                 "WHERE id = ?"
 
         private const val remove = "DELETE FROM Student " +
-                "WHERE f_name = ? AND s_name = ? AND m_name = ? AND group_id = ?"
+                "WHERE id = ?"
 
         private const val param = "SELECT * FROM Student " +
                 "WHERE group_id = ?"

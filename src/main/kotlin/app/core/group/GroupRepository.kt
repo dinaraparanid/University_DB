@@ -25,7 +25,7 @@ internal class GroupRepository(private val connection: Connection) :
                 "WHERE id = ?"
 
         private const val remove = "DELETE FROM Groups " +
-                "WHERE title = ? AND speciality_id = ?"
+                "WHERE id = ?"
 
         private const val param = "SELECT * FROM Groups " +
                 "WHERE speciality_id = ?"

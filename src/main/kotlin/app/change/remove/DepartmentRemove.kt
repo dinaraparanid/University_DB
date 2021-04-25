@@ -1,33 +1,22 @@
 package app.change.remove
 
-import app.change.ChangeWindow
+import app.change.selector.DepartmentSelector
 import app.core.Database
 import app.failureMessage
 import app.successMessage
-import arrow.core.Either
 import arrow.core.None
 import arrow.core.Some
-import java.awt.Rectangle
+import javax.swing.JMenuItem
 
-internal class DepartmentRemove : ChangeWindow(
-    "Remove Department",
-    "Title"
-) {
-
+internal class DepartmentRemove : JMenuItem("Remove Department") {
     init {
-        super.window.bounds = Rectangle(400, 300, 300, 100)
-
-        super.ok.addActionListener { e ->
-            if (e?.source === super.ok) {
-                when (Database.departmentRepository.remove(Either.Left(super.texts[0].text))) {
+        DepartmentSelector().getSelectedId().takeIf { it is Some }?.let {
+            Database.departmentRepository.remove(it.orNull()!!).let { res ->
+                when (res) {
                     None -> failureMessage()
                     is Some -> successMessage("Department removed")
                 }
-
-                super.window.isVisible = false
             }
         }
-
-        text = "Remove Department"
     }
 }

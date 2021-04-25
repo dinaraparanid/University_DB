@@ -28,7 +28,7 @@ internal class SpecialityRepository(private val connection: Connection) :
                 "WHERE id = ?"
 
         private const val remove = "DELETE FROM Speciality " +
-                "WHERE title = ?"
+                "WHERE id = ?"
 
         private const val param = "SELECT speciality_id FROM Teach_Spec " +
                 "WHERE teacher_id = ?"
@@ -98,7 +98,7 @@ internal class SpecialityRepository(private val connection: Connection) :
         }
 
     fun add(vararg args: Either<String, Int>?) = action(add, *args)
-    fun remove(vararg args: Either<String, Int>) = action(remove, *args)
+    fun remove(id: Int) = action(remove, Either.Right(id))
     fun update(vararg args: Either<String, Int>) = action(update, *args)
     fun nextId() = nextId(maxId)
 }

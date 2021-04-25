@@ -25,7 +25,7 @@ internal class SubjectRepository(private val connection: Connection) :
                 "WHERE id = ?"
 
         private const val remove = "DELETE FROM Subject " +
-                "WHERE title = ?"
+                "WHERE id = ?"
 
         private const val paramTeach = "SELECT teacher_id FROM Teach_Subj " +
                 "WHERE subject_id = ?"
@@ -96,7 +96,7 @@ internal class SubjectRepository(private val connection: Connection) :
         }
 
     fun add(vararg args: Either<String, Int>) = action(add, *args)
-    fun remove(vararg args: Either<String, Int>) = action(remove, *args)
+    fun remove(id: Int) = action(remove, Either.Right(id))
     fun update(vararg args: Either<String, Int>) = action(update, *args)
     fun nextId() = nextId(maxId)
 }

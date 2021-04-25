@@ -1,6 +1,7 @@
 package app.core.group
 
 import app.core.polymorphism.StringContent
+import app.core.polymorphism.WithId
 import app.core.student.Student
 
 internal data class Group(
@@ -8,7 +9,9 @@ internal data class Group(
     val title: String,
     val specialityId: Int,
     val students: Array<Student>
-) : StringContent {
+) : StringContent, WithId {
+    override fun id() = id
+
     override fun equals(other: Any?) = when {
         this === other -> true
         javaClass != other?.javaClass -> false

@@ -2,12 +2,15 @@ package app.core.faculty
 
 import app.core.polymorphism.StringContent
 import app.core.department.Department
+import app.core.polymorphism.WithId
 
 internal data class Faculty(
     val id: Int,
     val title: String,
     val departments: Array<Department>
-) : StringContent {
+) : StringContent, WithId {
+    override fun id() = id
+
     override fun equals(other: Any?) = when {
         this === other -> true
         javaClass != other?.javaClass -> false

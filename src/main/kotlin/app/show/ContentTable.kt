@@ -11,6 +11,15 @@ internal abstract class ContentTable<T>(
     vararg params: String
 ) : JMenuItem()
         where T : StringContent {
+    val cnt = content()
+
+    var table = JTable(
+        cnt
+            .map { it.asStringArray() }
+            .toTypedArray(),
+        params
+    ).apply { cellSelectionEnabled = false }
+
     init {
         action = object : AbstractAction() {
             override fun actionPerformed(e: ActionEvent?) {
@@ -18,14 +27,7 @@ internal abstract class ContentTable<T>(
                     .apply {
                         bounds = Rectangle(400, 300, 300, 400)
                         contentPane.add(
-                            JScrollPane(
-                                JTable(
-                                    content()
-                                        .map { it.asStringArray() }
-                                        .toTypedArray(),
-                                    params
-                                )
-                            ),
+                            JScrollPane(table),
                             BorderLayout.CENTER
                         )
                     }

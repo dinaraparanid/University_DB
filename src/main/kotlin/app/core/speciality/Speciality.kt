@@ -2,6 +2,7 @@ package app.core.speciality
 
 import app.core.polymorphism.StringContent
 import app.core.group.Group
+import app.core.polymorphism.WithId
 import app.core.teacher.Teacher
 
 internal data class Speciality(
@@ -9,7 +10,9 @@ internal data class Speciality(
     val title: String,
     val groups: Array<Group>,
     val teachers: Array<Teacher>
-) : StringContent {
+) : StringContent, WithId {
+    override fun id() = id
+
     override fun equals(other: Any?) = when {
         this === other -> true
         javaClass != other?.javaClass -> false

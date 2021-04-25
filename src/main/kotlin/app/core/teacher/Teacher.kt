@@ -1,6 +1,7 @@
 package app.core.teacher
 
 import app.core.polymorphism.StringContent
+import app.core.polymorphism.WithId
 import app.core.speciality.Speciality
 import app.core.subject.Subject
 
@@ -12,7 +13,9 @@ internal data class Teacher(
     val info: String,
     val specialities: Array<Speciality>,
     val subjects: Array<Subject>
-) : StringContent {
+) : StringContent, WithId {
+    override fun id() = id
+
     override fun equals(other: Any?) = when {
         this === other -> true
         javaClass != other?.javaClass -> false

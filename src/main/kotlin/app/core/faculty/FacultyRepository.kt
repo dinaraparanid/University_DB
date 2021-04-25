@@ -19,7 +19,7 @@ internal class FacultyRepository(private val connection: Connection) : Repositor
                 "WHERE id = ?"
 
         private const val remove = "DELETE FROM Faculty " +
-                "WHERE title = ?"
+                "WHERE id = ?"
     }
 
     override fun all() = connection
@@ -47,7 +47,7 @@ internal class FacultyRepository(private val connection: Connection) : Repositor
         }
 
     fun add(vararg args: Either<String, Int>?) = action(add, *args)
-    fun remove(vararg args: Either<String, Int>) = action(remove, *args)
+    fun remove(id: Int) = action(remove, Either.Right(id))
     fun update(vararg args: Either<String, Int>) = action(update, *args)
     fun nextId() = nextId(maxId)
 }
