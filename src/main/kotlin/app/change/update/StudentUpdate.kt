@@ -8,8 +8,12 @@ import app.successMessage
 import arrow.core.Either
 import arrow.core.None
 import arrow.core.Some
-import java.awt.event.ActionEvent
-import javax.swing.AbstractAction
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import java.awt.BorderLayout
+import java.awt.Rectangle
+import javax.swing.JFrame
+import javax.swing.JScrollPane
 
 internal class StudentUpdate :
     ChangeWindow(
@@ -20,17 +24,31 @@ internal class StudentUpdate :
         "Group Title",
         "Info"
     ) {
+    private val ss = StudentSelector()
+
+    private val selectWindow = JFrame(ss.title)
+        .apply {
+            bounds = Rectangle(400, 300, 300, 400)
+            contentPane.add(
+                JScrollPane(ss.table.table),
+                BorderLayout.CENTER
+            )
+        }
+
     init {
         window.isVisible = false
 
-        action = object : AbstractAction() {
-            override fun actionPerformed(e: ActionEvent?) {
-                if (e?.source === this) {
-                    StudentSelector().apply { show() }.apply { show() }.selectedId.takeIf { it is Some }?.let { id ->
-                        window.isVisible = true
+        addActionListener {
+            selectWindow.isVisible = true
 
-                        ok.addActionListener { e ->
-                            if (e?.source === ok) {
+            GlobalScope.launch {
+                while (selectWindow.isVisible) {
+                    if (ss.selectedId is Some) {
+                        ss.selectedId.takeIf { it is Some }?.let { id ->
+                            selectWindow.isVisible = false
+                            window.isVisible = true
+
+                            ok.addActionListener {
                                 Database.studentRepository.update(
                                     Either.Left(texts[0].text),
                                     Either.Left(texts[1].text),

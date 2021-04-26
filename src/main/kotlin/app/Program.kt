@@ -4,8 +4,11 @@ import app.show.*
 import app.change.add.*
 import app.change.remove.*
 import app.change.update.*
-import java.awt.*
-import javax.swing.*
+import java.awt.BorderLayout
+import java.awt.Rectangle
+import javax.swing.JFrame
+import javax.swing.JMenu
+import javax.swing.JMenuBar
 
 /** Program itself */
 
@@ -29,7 +32,6 @@ object Program {
         add(DepartmentAdd())
         add(FacultyAdd())
     }
-
 
     private val removeMenu = JMenu("Remove").apply {
         add(StudentRemove())

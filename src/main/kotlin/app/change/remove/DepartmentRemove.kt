@@ -15,7 +15,7 @@ internal class DepartmentRemove : JMenuItem() {
         action = object : AbstractAction() {
             override fun actionPerformed(e: ActionEvent?) {
                 if (e?.source === this) {
-                    DepartmentSelector().apply { show() }.selectedId.takeIf { it is Some }?.let {
+                    DepartmentSelector().selectedId.takeIf { it is Some }?.let {
                         Database.departmentRepository.remove(it.orNull()!!).let { res ->
                             when (res) {
                                 None -> failureMessage()

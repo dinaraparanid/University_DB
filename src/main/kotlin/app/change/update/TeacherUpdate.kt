@@ -8,8 +8,12 @@ import app.successMessage
 import arrow.core.Either
 import arrow.core.None
 import arrow.core.Some
-import java.awt.event.ActionEvent
-import javax.swing.AbstractAction
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import java.awt.BorderLayout
+import java.awt.Rectangle
+import javax.swing.JFrame
+import javax.swing.JScrollPane
 
 internal class TeacherUpdate :
     ChangeWindow(
@@ -19,17 +23,31 @@ internal class TeacherUpdate :
         "Middle Name",
         "Info"
     ) {
+    private val ts = TeacherSelector()
+
+    private val selectWindow = JFrame(ts.title)
+        .apply {
+            bounds = Rectangle(400, 300, 300, 400)
+            contentPane.add(
+                JScrollPane(ts.table.table),
+                BorderLayout.CENTER
+            )
+        }
+
     init {
         window.isVisible = false
 
-        action = object : AbstractAction() {
-            override fun actionPerformed(e: ActionEvent?) {
-                if (e?.source === this) {
-                    TeacherSelector().apply { show() }.selectedId.takeIf { it is Some }?.let { id ->
-                        window.isVisible = true
+        addActionListener {
+            selectWindow.isVisible = true
 
-                        ok.addActionListener { e ->
-                            if (e?.source === ok) {
+            GlobalScope.launch {
+                while (selectWindow.isVisible) {
+                    if (ts.selectedId is Some) {
+                        ts.selectedId.takeIf { it is Some }?.let { id ->
+                            selectWindow.isVisible = false
+                            window.isVisible = true
+
+                            ok.addActionListener {
                                 Database.teacherRepository.update(
                                     Either.Left(texts[0].text),
                                     Either.Left(texts[1].text),

@@ -3,7 +3,6 @@ package app.core.subject
 import app.core.Database
 import app.core.polymorphism.GetById
 import app.core.polymorphism.Repository
-import app.core.polymorphism.StringContent
 import arrow.core.Either
 import java.sql.Connection
 

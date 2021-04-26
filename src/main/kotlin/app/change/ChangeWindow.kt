@@ -16,10 +16,8 @@ internal abstract class ChangeWindow(
         val panel = JPanel()
 
         args.forEach {
-            val label = JLabel("$it: ")
             val inp = JTextField(15).apply { isEditable = true }
-
-            panel.add(label)
+            panel.add(JLabel("$it: "))
             panel.add(inp)
             texts.add(inp)
         }

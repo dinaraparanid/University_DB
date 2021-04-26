@@ -6,22 +6,40 @@ import app.failureMessage
 import app.successMessage
 import arrow.core.None
 import arrow.core.Some
-import java.awt.event.ActionEvent
-import javax.swing.AbstractAction
-import javax.swing.JMenuItem
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import java.awt.BorderLayout
+import java.awt.Rectangle
+import javax.swing.*
 
 internal class FacultyRemove : JMenuItem() {
+    private val fs = FacultySelector()
+
+    private val window = JFrame(fs.title)
+        .apply {
+            bounds = Rectangle(400, 300, 300, 400)
+            contentPane.add(
+                JScrollPane(fs.table.table),
+                BorderLayout.CENTER
+            )
+        }
+
     init {
-        action = object : AbstractAction() {
-            override fun actionPerformed(e: ActionEvent?) {
-                if (e?.source === this) {
-                    FacultySelector().apply { show() }.selectedId.takeIf { it is Some }?.let {
-                        Database.facultyRepository.remove(it.orNull()!!).let { res ->
+        addActionListener {
+            window.isVisible = true
+
+            GlobalScope.launch {
+                while (window.isVisible) {
+                    if (fs.selectedId is Some) {
+                        Database.facultyRepository.remove(fs.selectedId!!.orNull()!!).let { res ->
                             when (res) {
                                 None -> failureMessage()
                                 is Some -> successMessage("Faculty removed")
                             }
                         }
+
+                        window.isVisible = false
+                        break
                     }
                 }
             }

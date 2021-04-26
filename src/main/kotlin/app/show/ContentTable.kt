@@ -1,7 +1,8 @@
 package app.show
 
 import app.core.polymorphism.StringContent
-import java.awt.*
+import java.awt.BorderLayout
+import java.awt.Rectangle
 import java.awt.event.ActionEvent
 import javax.swing.*
 
