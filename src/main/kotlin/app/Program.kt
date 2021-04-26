@@ -3,6 +3,7 @@ package app
 import app.show.*
 import app.change.add.*
 import app.change.remove.*
+import app.change.update.*
 import java.awt.*
 import javax.swing.*
 
@@ -40,7 +41,15 @@ object Program {
         add(FacultyRemove())
     }
 
-    private val updateMenu = JMenu("Update")
+    private val updateMenu = JMenu("Update").apply {
+        add(StudentUpdate())
+        add(GroupUpdate())
+        add(SpecialityUpdate())
+        add(TeacherUpdate())
+        add(SubjectUpdate())
+        add(DepartmentUpdate())
+        add(FacultyUpdate())
+    }
 
     private val frame = JFrame("University Database").also { frame ->
         frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
@@ -59,7 +68,5 @@ object Program {
 
     /** Start of whole program */
 
-    fun start() {
-        frame.isVisible = true
-    }
+    fun start() { frame.isVisible = true }
 }

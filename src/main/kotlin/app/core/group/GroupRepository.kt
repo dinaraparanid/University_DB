@@ -83,8 +83,8 @@ internal class GroupRepository(private val connection: Connection) :
                 }
         }
 
+    override fun update(vararg args: Either<String, Int>?) = action(update, *args)
     fun add(vararg args: Either<String, Int>) = action(add, args[0], args[1], null)
     fun remove(vararg args: Either<String, Int>?) = action(remove, *args)
-    fun update(vararg args: Either<String, Int>) = action(update, *args)
     fun nextId() = nextId(maxId)
 }

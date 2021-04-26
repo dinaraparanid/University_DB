@@ -2,18 +2,24 @@ package app.core.department
 
 import app.core.Database
 import app.core.polymorphism.GetById
+import app.core.polymorphism.GetIdByTitle
 import app.core.polymorphism.Repository
+import app.core.polymorphism.getIdByTitle
 import arrow.core.Either
 import java.sql.Connection
 
 internal class DepartmentRepository(private val connection: Connection) :
     Repository<Department>(connection),
-    GetById<Department> {
+    GetById<Department>,
+    GetIdByTitle {
     companion object SQLCommands {
         private const val all = "SELECT * FROM Department"
 
         private const val filtered = "SELECT * FROM Department " +
                 "WHERE id = ?"
+
+        private const val filteredTitle = "SELECT id FROM Department " +
+                "WHERE title = ?"
 
         private const val maxId = "SELECT MAX(id) as max_id FROM Department"
 
@@ -101,8 +107,9 @@ internal class DepartmentRepository(private val connection: Connection) :
                 }
         }
 
+    override fun update(vararg args: Either<String, Int>?) = action(update, *args)
     fun add(vararg args: Either<String, Int>?) = action(add, args[0], args[1], null)
     fun remove(id: Int) = action(remove, Either.Right(id))
-    fun update(vararg args: Either<String, Int>) = action(update, *args)
     fun nextId() = nextId(maxId)
+    fun getIdByTitle(title: String) = getIdByTitle(filteredTitle, title, connection)
 }

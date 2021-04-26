@@ -79,8 +79,8 @@ internal class StudentRepository(private val connection: Connection) :
                 }
         }
 
+    override fun update(vararg args: Either<String, Int>?) = action(update, *args)
     fun add(vararg args: Either<String, Int>) = action(add, args[0], args[1], args[2], args[3], null, args[4])
     fun remove(vararg args: Either<String, Int>?) = action(remove, *args)
-    fun update(vararg args: Either<String, Int>) = action(update, *args)
     fun nextId() = nextId(maxId)
 }

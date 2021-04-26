@@ -14,9 +14,8 @@ internal class GroupRemove : ChangeWindow(
     "Group Title",
     "Speciality Title"
 ) {
-
     init {
-        super.window.bounds = Rectangle(400, 300, 300, 100)
+        super.window.bounds = Rectangle(400, 300, 300, 200)
 
         super.ok.addActionListener { e ->
             if (e?.source === super.ok) {

@@ -3,6 +3,7 @@ package app.core.subject
 import app.core.Database
 import app.core.polymorphism.GetById
 import app.core.polymorphism.Repository
+import app.core.polymorphism.StringContent
 import arrow.core.Either
 import java.sql.Connection
 
@@ -95,8 +96,8 @@ internal class SubjectRepository(private val connection: Connection) :
                 }
         }
 
+    override fun update(vararg args: Either<String, Int>?) = action(update, *args)
     fun add(vararg args: Either<String, Int>) = action(add, *args)
     fun remove(id: Int) = action(remove, Either.Right(id))
-    fun update(vararg args: Either<String, Int>) = action(update, *args)
     fun nextId() = nextId(maxId)
 }
