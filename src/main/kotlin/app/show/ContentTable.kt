@@ -14,19 +14,43 @@ internal abstract class ContentTable<T>(
         where T : StringContent {
     val cnt = content()
 
-    var table = JTable(
+    var table = object : JTable(
         cnt
             .map { it.asStringArray() }
             .toTypedArray(),
         params
-    ).apply { cellSelectionEnabled = false }
+    ) {
+        override fun isCellEditable(row: Int, column: Int) = false
+
+        init {
+            cellSelectionEnabled = false
+        }
+    }
 
     init {
         action = object : AbstractAction() {
             override fun actionPerformed(e: ActionEvent?) {
+                table = object : JTable() {
+                    override fun isCellEditable(row: Int, column: Int) = false
+                }
+
                 JFrame(title)
                     .apply {
                         bounds = Rectangle(400, 300, 300, 400)
+
+                        table = object : JTable(
+                            cnt
+                                .map { it.asStringArray() }
+                                .toTypedArray(),
+                            params
+                        ) {
+                            override fun isCellEditable(row: Int, column: Int) = false
+
+                            init {
+                                cellSelectionEnabled = false
+                            }
+                        }
+
                         contentPane.add(
                             JScrollPane(table),
                             BorderLayout.CENTER

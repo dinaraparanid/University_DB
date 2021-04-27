@@ -55,6 +55,8 @@ internal class DepartmentUpdate : ChangeWindow("Update Department", "Title", "Fa
                                         None -> failureMessage()
                                         is Some -> successMessage("Department updated")
                                     }
+
+                                    window.isVisible = false
                                 }
                             }
                         }

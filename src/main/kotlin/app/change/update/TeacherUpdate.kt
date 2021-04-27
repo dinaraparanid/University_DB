@@ -52,13 +52,15 @@ internal class TeacherUpdate :
                                     Either.Left(texts[0].text),
                                     Either.Left(texts[1].text),
                                     Either.Left(texts[2].text),
-                                    Either.Left(texts[4].text),
+                                    Either.Left(texts[3].text),
                                     id.toEither { String() }
                                 ).let { res ->
                                     when (res) {
                                         None -> failureMessage()
                                         is Some -> successMessage("teacher updated")
                                     }
+
+                                    window.isVisible = false
                                 }
                             }
                         }

@@ -34,10 +34,11 @@ internal abstract class AbstractUpdateTitle<T>(
         }
 
     init {
+        action = null
         window.isVisible = false
         text = title
 
-        addActionListener {
+        this.addActionListener {
             selectWindow.isVisible = true
 
             GlobalScope.launch {
@@ -45,9 +46,10 @@ internal abstract class AbstractUpdateTitle<T>(
                     if (selector.selectedId is Some) {
                         selector.selectedId.takeIf { it is Some }?.let { id ->
                             selectWindow.isVisible = false
+                            window.bounds = Rectangle(400, 300, 300, 100)
                             window.isVisible = true
 
-                            ok.addActionListener { e ->
+                            ok.addActionListener {
                                 repository.update(
                                     Either.Left(texts[0].text),
                                     id.toEither { String() }
@@ -56,6 +58,8 @@ internal abstract class AbstractUpdateTitle<T>(
                                         None -> failureMessage()
                                         is Some -> successMessage("${title.trim().split(' ').last()} updated")
                                     }
+
+                                    window.isVisible = false
                                 }
                             }
                         }

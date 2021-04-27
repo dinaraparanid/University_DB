@@ -55,6 +55,8 @@ internal class GroupUpdate : ChangeWindow("Update Group", "Title", "Speciality t
                                         None -> failureMessage()
                                         is Some -> successMessage("Group updated")
                                     }
+
+                                    window.isVisible = false
                                 }
                             }
                         }

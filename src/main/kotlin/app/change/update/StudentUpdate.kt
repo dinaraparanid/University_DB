@@ -66,6 +66,8 @@ internal class StudentUpdate :
                                         None -> failureMessage()
                                         is Some -> successMessage("Student updated")
                                     }
+
+                                    window.isVisible = false
                                 }
                             }
                         }
