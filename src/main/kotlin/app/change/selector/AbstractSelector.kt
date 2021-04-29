@@ -5,6 +5,12 @@ import app.core.polymorphism.WithId
 import app.show.ContentTable
 import arrow.core.Option
 import arrow.core.Some
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import java.awt.BorderLayout
+import java.awt.Rectangle
+import javax.swing.JFrame
+import javax.swing.JScrollPane
 
 internal abstract class AbstractSelector<T>(
     val title: String,
@@ -15,17 +21,34 @@ internal abstract class AbstractSelector<T>(
         action = null
         text = title
         table.cellSelectionEnabled = true
-    }
 
-    var selectedId: Option<Int>? = null
-        private set
-
-    init {
-        table.table.selectionModel.addListSelectionListener {
-            table.cnt.getOrNull(table.table.selectedRow).let {
+        table.selectionModel.addListSelectionListener {
+            cnt.getOrNull(table.selectedRow).let {
                 selectedId = when (it) {
                     null -> null
                     else -> Some(it.id())
+                }
+            }
+        }
+    }
+
+    private var selectedId: Option<Int>? = null
+
+    val window = JFrame(title)
+        .apply {
+            bounds = Rectangle(400, 300, 300, 400)
+            contentPane.add(
+                JScrollPane(table.table),
+                BorderLayout.CENTER
+            )
+        }
+
+    inline fun addSelectionListener(crossinline func: (selectedId: Int) -> Unit) {
+        GlobalScope.launch {
+            while (window.isVisible) {
+                if (selectedId is Some) {
+                    func(selectedId!!.orNull()!!)
+                    break
                 }
             }
         }

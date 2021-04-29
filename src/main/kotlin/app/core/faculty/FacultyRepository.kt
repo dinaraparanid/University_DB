@@ -6,8 +6,8 @@ import arrow.core.Either
 import java.sql.Connection
 
 internal class FacultyRepository(private val connection: Connection) :
-    Repository<Faculty>(connection),
-    GetIdByTitle {
+    Repository(connection),
+    GettableIdByParams {
     companion object SQLCommands {
         private const val all = "SELECT * FROM Faculty"
 
@@ -33,7 +33,7 @@ internal class FacultyRepository(private val connection: Connection) :
             stm
                 .executeQuery(all)
                 .use { res ->
-                    mutableListOf<Faculty>()
+                    mutableListOf<StringContent>()
                         .apply {
                             while (res.next()) {
                                 val id = res.getInt("id")
@@ -55,5 +55,5 @@ internal class FacultyRepository(private val connection: Connection) :
     fun add(vararg args: Either<String, Int>?) = action(add, *args)
     fun remove(id: Int) = action(remove, Either.Right(id))
     fun nextId() = nextId(maxId)
-    fun getIdByTitle(title: String) = getIdByTitle(filteredTitle, title, connection)
+    fun getIdByTitle(title: String) = getIdByParams(filteredTitle, connection, Either.Left(title))
 }

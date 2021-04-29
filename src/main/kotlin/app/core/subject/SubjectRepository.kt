@@ -1,19 +1,22 @@
 package app.core.subject
 
 import app.core.Database
-import app.core.polymorphism.GetById
-import app.core.polymorphism.Repository
+import app.core.polymorphism.*
 import arrow.core.Either
 import java.sql.Connection
 
 internal class SubjectRepository(private val connection: Connection) :
-    Repository<Subject>(connection),
-    GetById<Subject> {
+    Repository(connection),
+    GettableById<Subject>,
+    GettableIdByParams {
     companion object SQLCommands {
         private const val all = "SELECT * FROM Subject"
 
         private const val filtered = "SELECT * FROM Subject " +
                 "WHERE id = ?"
+
+        private const val filteredTitle = "SELECT id FROM Subject " +
+                "WHERE title = ?"
 
         private const val maxId = "SELECT MAX(id) as max_id FROM Subject"
 
@@ -76,7 +79,7 @@ internal class SubjectRepository(private val connection: Connection) :
             stm
                 .executeQuery(all)
                 .use { res ->
-                    mutableListOf<Subject>()
+                    mutableListOf<StringContent>()
                         .apply {
                             while (res.next()) {
                                 val id = res.getInt("id")
@@ -96,6 +99,7 @@ internal class SubjectRepository(private val connection: Connection) :
         }
 
     override fun update(vararg args: Either<String, Int>?) = action(update, *args)
+    fun getByTitle(title: String) = getIdByParams(filteredTitle, connection, Either.Left(title))
     fun add(vararg args: Either<String, Int>) = action(add, *args)
     fun remove(id: Int) = action(remove, Either.Right(id))
     fun nextId() = nextId(maxId)

@@ -6,9 +6,9 @@ import arrow.core.Either
 import java.sql.Connection
 
 internal class GroupRepository(private val connection: Connection) :
-    Repository<Group>(connection),
-    GetById<Group>,
-    GetIdByTitle {
+    Repository(connection),
+    GettableById<Group>,
+    GettableIdByParams {
     companion object SQLCommands {
         private const val all = "SELECT * FROM Groups"
 
@@ -56,15 +56,13 @@ internal class GroupRepository(private val connection: Connection) :
 
         }
 
-    fun getIdByTitle(title: String) = getIdByTitle(filteredTitle, title, connection)
-
     override fun all() = connection
         .createStatement()
         .use { stm ->
             stm
                 .executeQuery(all)
                 .use { res ->
-                    mutableListOf<Group>()
+                    mutableListOf<StringContent>()
                         .apply {
                             while (res.next()) {
                                 val id = res.getInt("id")
@@ -87,4 +85,5 @@ internal class GroupRepository(private val connection: Connection) :
     fun add(vararg args: Either<String, Int>) = action(add, args[0], args[1], null)
     fun remove(vararg args: Either<String, Int>?) = action(remove, *args)
     fun nextId() = nextId(maxId)
+    fun getIdByTitle(title: String) = getIdByParams(filteredTitle, connection, Either.Left(title))
 }

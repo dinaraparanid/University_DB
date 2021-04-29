@@ -1,19 +1,22 @@
 package app.core.teacher
 
 import app.core.Database
-import app.core.polymorphism.GetById
-import app.core.polymorphism.Repository
+import app.core.polymorphism.*
 import arrow.core.Either
 import java.sql.Connection
 
 internal class TeacherRepository(private val connection: Connection) :
-    Repository<Teacher>(connection),
-    GetById<Teacher> {
+    Repository(connection),
+    GettableById<Teacher>,
+    GettableIdByParams {
     companion object SQLCommands {
         private const val all = "SELECT * FROM Teacher"
 
         private const val filtered = "SELECT * FROM Teacher " +
                 "WHERE id = ?"
+
+        private const val filteredParams = "SELECT id FROM Teacher " +
+                "WHERE f_name = ? AND s_name = ? AND m_name = ?"
 
         private const val maxId = "SELECT MAX(id) as max_id FROM Teacher"
 
@@ -32,6 +35,14 @@ internal class TeacherRepository(private val connection: Connection) :
 
         private const val paramSubj = "SELECT teacher_id FROM Teach_Subj " +
                 "WHERE subject_id = ?"
+
+        private const val maxIdTeachSubj = "SELECT MAX(id) as max_id FROM Teach_Subj"
+
+        private const val addSubject = "INSERT INTO Subj_Dep (id, teacher_id, subject_id) " +
+                "VALUES (?, ?, ?)"
+
+        private const val removeSubject = "DELETE FROM Teach_Subj " +
+                "WHERE id = ?"
     }
 
     override fun getById(id: Int, mod: Int) = connection
@@ -79,7 +90,7 @@ internal class TeacherRepository(private val connection: Connection) :
             stm
                 .executeQuery(all)
                 .use { res ->
-                    mutableListOf<Teacher>()
+                    mutableListOf<StringContent>()
                         .apply {
                             while (res.next()) {
                                 val id = res.getInt("id")
@@ -102,7 +113,25 @@ internal class TeacherRepository(private val connection: Connection) :
         }
 
     override fun update(vararg args: Either<String, Int>?) = action(update, *args)
+
+    fun addSubject(teacherId: Int, subjectId: Int) = action(
+        addSubject,
+        Either.Right(nextIdTeachSubj()),
+        Either.Right(teacherId),
+        Either.Right(subjectId)
+    )
+
+    fun getIdByParams(name: String, family: String, father: String) = getIdByParams(
+        filteredParams,
+        connection,
+        Either.Left(name),
+        Either.Left(family),
+        Either.Left(father)
+    )
+
     fun add(vararg args: Either<String, Int>) = action(add, *args)
     fun remove(id: Int) = action(remove, Either.Right(id))
+    fun removeSubject(id: Int) = action(removeSubject, Either.Right(id))
     fun nextId() = nextId(maxId)
+    fun nextIdTeachSubj() = nextId(maxIdTeachSubj)
 }

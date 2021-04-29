@@ -1,15 +1,18 @@
 package app.core.student
 
-import app.core.polymorphism.GetById
-import app.core.polymorphism.Repository
+import app.core.polymorphism.*
 import arrow.core.Either
 import java.sql.Connection
 
 internal class StudentRepository(private val connection: Connection) :
-    Repository<Student>(connection),
-    GetById<Student> {
+    Repository(connection),
+    GettableById<Student>,
+    GettableIdByParams {
     companion object SQLCommands {
         private const val all = "SELECT * FROM Student"
+
+        private const val filteredParams = "SELECT id FROM Teacher " +
+                "WHERE f_name = ? AND s_name = ? AND m_name = ? AND group_id = ?"
 
         private const val maxId = "SELECT MAX(id) as max_id FROM Student"
 
@@ -44,7 +47,8 @@ internal class StudentRepository(private val connection: Connection) :
                                         res.getString("s_name"),
                                         res.getString("m_name"),
                                         res.getInt("group_id"),
-                                        res.getString("info")
+                                        res.getString("info"),
+                                        hashMapOf()
                                     )
                                 )
                             }
@@ -60,7 +64,7 @@ internal class StudentRepository(private val connection: Connection) :
             stm
                 .executeQuery(all)
                 .use { res ->
-                    mutableListOf<Student>()
+                    mutableListOf<StringContent>()
                         .apply {
                             while (res.next()) {
                                 add(
@@ -70,7 +74,8 @@ internal class StudentRepository(private val connection: Connection) :
                                         res.getString("s_name"),
                                         res.getString("m_name"),
                                         res.getInt("group_id"),
-                                        res.getString("info")
+                                        res.getString("info"),
+                                        hashMapOf()
                                     )
                                 )
                             }
@@ -80,6 +85,16 @@ internal class StudentRepository(private val connection: Connection) :
         }
 
     override fun update(vararg args: Either<String, Int>?) = action(update, *args)
+
+    fun getIdByParams(name: String, family: String, father: String, groupId: Int) = getIdByParams(
+        filteredParams,
+        connection,
+        Either.Left(name),
+        Either.Left(family),
+        Either.Left(father),
+        Either.Right(groupId)
+    )
+
     fun add(vararg args: Either<String, Int>) = action(add, args[0], args[1], args[2], args[3], null, args[4])
     fun remove(vararg args: Either<String, Int>?) = action(remove, *args)
     fun nextId() = nextId(maxId)

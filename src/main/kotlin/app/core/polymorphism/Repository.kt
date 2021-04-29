@@ -7,8 +7,8 @@ import arrow.core.Option
 import arrow.core.Some
 import java.sql.Connection
 
-internal abstract class Repository<T>(private val connection: Connection) {
-    abstract fun all(): Array<T>
+internal abstract class Repository(private val connection: Connection) {
+    abstract fun all(): Array<StringContent>
     abstract fun update(vararg args: Either<String, Int>?): Option<Unit>
 
     fun nextId(maxId: String) = connection

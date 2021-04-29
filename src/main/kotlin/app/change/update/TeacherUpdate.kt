@@ -8,12 +8,6 @@ import app.successMessage
 import arrow.core.Either
 import arrow.core.None
 import arrow.core.Some
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import java.awt.BorderLayout
-import java.awt.Rectangle
-import javax.swing.JFrame
-import javax.swing.JScrollPane
 
 internal class TeacherUpdate :
     ChangeWindow(
@@ -23,50 +17,35 @@ internal class TeacherUpdate :
         "Middle Name",
         "Info"
     ) {
-    private val ts = TeacherSelector()
+    private val ts = TeacherSelector().also { ts ->
+        ts.addSelectionListener { selectedId ->
+            ts.window.isVisible = false
+            window.isVisible = true
 
-    private val selectWindow = JFrame(ts.title)
-        .apply {
-            bounds = Rectangle(400, 300, 300, 400)
-            contentPane.add(
-                JScrollPane(ts.table.table),
-                BorderLayout.CENTER
-            )
+            ok.addActionListener {
+                Database.teacherRepository.update(
+                    Either.Left(texts[0].text),
+                    Either.Left(texts[1].text),
+                    Either.Left(texts[2].text),
+                    Either.Left(texts[3].text),
+                    Some(selectedId).toEither { String() }
+                ).let { res ->
+                    when (res) {
+                        None -> failureMessage()
+                        is Some -> successMessage("Teacher updated")
+                    }
+
+                    window.isVisible = false
+                }
+            }
         }
+    }
 
     init {
         window.isVisible = false
 
         addActionListener {
-            selectWindow.isVisible = true
-
-            GlobalScope.launch {
-                while (selectWindow.isVisible) {
-                    if (ts.selectedId is Some) {
-                        ts.selectedId.takeIf { it is Some }?.let { id ->
-                            selectWindow.isVisible = false
-                            window.isVisible = true
-
-                            ok.addActionListener {
-                                Database.teacherRepository.update(
-                                    Either.Left(texts[0].text),
-                                    Either.Left(texts[1].text),
-                                    Either.Left(texts[2].text),
-                                    Either.Left(texts[3].text),
-                                    id.toEither { String() }
-                                ).let { res ->
-                                    when (res) {
-                                        None -> failureMessage()
-                                        is Some -> successMessage("teacher updated")
-                                    }
-
-                                    window.isVisible = false
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            ts.window.isVisible = true
         }
 
         text = "Update Teacher"

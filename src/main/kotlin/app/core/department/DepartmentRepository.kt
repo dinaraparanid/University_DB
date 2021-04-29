@@ -1,17 +1,14 @@
 package app.core.department
 
 import app.core.Database
-import app.core.polymorphism.GetById
-import app.core.polymorphism.GetIdByTitle
-import app.core.polymorphism.Repository
-import app.core.polymorphism.getIdByTitle
+import app.core.polymorphism.*
 import arrow.core.Either
 import java.sql.Connection
 
 internal class DepartmentRepository(private val connection: Connection) :
-    Repository<Department>(connection),
-    GetById<Department>,
-    GetIdByTitle {
+    Repository(connection),
+    GettableById<Department>,
+    GettableIdByParams {
     companion object SQLCommands {
         private const val all = "SELECT * FROM Department"
 
@@ -38,6 +35,14 @@ internal class DepartmentRepository(private val connection: Connection) :
 
         private const val paramSubj = "SELECT department_id FROM Subj_Dep " +
                 "WHERE subject_id = ?"
+
+        private const val maxIdSubjDep = "SELECT MAX(id) as max_id FROM Subj_Dep"
+
+        private const val addSubject = "INSERT INTO Subj_Dep (id, subject_id, department_id) " +
+                "VALUES (?, ?, ?)"
+
+        private const val removeSubject = "DELETE FROM Subj_Dep " +
+                "WHERE id = ?"
     }
 
     override fun getById(id: Int, mod: Int) = connection
@@ -88,7 +93,7 @@ internal class DepartmentRepository(private val connection: Connection) :
             stm
                 .executeQuery(all)
                 .use { res ->
-                    mutableListOf<Department>()
+                    mutableListOf<StringContent>()
                         .apply {
                             while (res.next()) {
                                 val id = res.getInt("id")
@@ -108,8 +113,18 @@ internal class DepartmentRepository(private val connection: Connection) :
         }
 
     override fun update(vararg args: Either<String, Int>?) = action(update, *args)
+
+    fun addSubject(subjectId: Int, departmentId: Int) = action(
+        addSubject,
+        Either.Right(nextIdSubjDep()),
+        Either.Right(subjectId),
+        Either.Right(departmentId)
+    )
+
     fun add(vararg args: Either<String, Int>?) = action(add, args[0], args[1], null)
     fun remove(id: Int) = action(remove, Either.Right(id))
+    fun removeSubject(id: Int) = action(removeSubject, Either.Right(id))
     fun nextId() = nextId(maxId)
-    fun getIdByTitle(title: String) = getIdByTitle(filteredTitle, title, connection)
+    fun nextIdSubjDep() = nextId(maxIdSubjDep)
+    fun getIdByTitle(title: String) = getIdByParams(filteredTitle, connection, Either.Left(title))
 }
