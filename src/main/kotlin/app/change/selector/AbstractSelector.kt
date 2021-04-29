@@ -1,7 +1,6 @@
 package app.change.selector
 
-import app.core.polymorphism.StringContent
-import app.core.polymorphism.WithId
+import app.core.polymorphism.Entity
 import app.show.ContentTable
 import arrow.core.Option
 import arrow.core.Some
@@ -15,9 +14,8 @@ import javax.swing.JScrollPane
 internal abstract class AbstractSelector<T>(
     val title: String,
     tab: ContentTable<T>
-) where T : StringContent,
-        T : WithId {
-    val table = tab.apply {
+) where T : Entity {
+    private val table = tab.apply {
         action = null
         text = title
         table.cellSelectionEnabled = true

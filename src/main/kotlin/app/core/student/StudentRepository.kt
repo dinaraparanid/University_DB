@@ -5,7 +5,7 @@ import arrow.core.Either
 import java.sql.Connection
 
 internal class StudentRepository(private val connection: Connection) :
-    Repository(connection),
+    Repository<Student>(connection),
     GettableById<Student>,
     GettableIdByParams {
     companion object SQLCommands {
@@ -64,7 +64,7 @@ internal class StudentRepository(private val connection: Connection) :
             stm
                 .executeQuery(all)
                 .use { res ->
-                    mutableListOf<StringContent>()
+                    mutableListOf<Student>()
                         .apply {
                             while (res.next()) {
                                 add(

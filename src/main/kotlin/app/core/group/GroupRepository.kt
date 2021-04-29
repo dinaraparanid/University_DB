@@ -6,7 +6,7 @@ import arrow.core.Either
 import java.sql.Connection
 
 internal class GroupRepository(private val connection: Connection) :
-    Repository(connection),
+    Repository<Group>(connection),
     GettableById<Group>,
     GettableIdByParams {
     companion object SQLCommands {
@@ -62,7 +62,7 @@ internal class GroupRepository(private val connection: Connection) :
             stm
                 .executeQuery(all)
                 .use { res ->
-                    mutableListOf<StringContent>()
+                    mutableListOf<Group>()
                         .apply {
                             while (res.next()) {
                                 val id = res.getInt("id")

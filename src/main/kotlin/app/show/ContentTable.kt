@@ -1,6 +1,6 @@
 package app.show
 
-import app.core.polymorphism.StringContent
+import app.core.polymorphism.Entity
 import java.awt.BorderLayout
 import java.awt.Rectangle
 import java.awt.event.ActionEvent
@@ -11,7 +11,7 @@ internal abstract class ContentTable<T>(
     content: () -> Array<T>,
     vararg params: String
 ) : JMenuItem()
-        where T : StringContent {
+        where T : Entity {
     val cnt = content()
 
     var table = object : JTable(

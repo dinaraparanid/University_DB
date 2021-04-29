@@ -2,9 +2,8 @@ package app.change.update
 
 import app.change.ChangeWindow
 import app.change.selector.AbstractSelector
+import app.core.polymorphism.Entity
 import app.core.polymorphism.Repository
-import app.core.polymorphism.StringContent
-import app.core.polymorphism.WithId
 import app.failureMessage
 import app.successMessage
 import arrow.core.Either
@@ -15,10 +14,9 @@ import java.awt.Rectangle
 internal abstract class AbstractUpdateTitle<T>(
     title: String,
     selector: AbstractSelector<T>,
-    repository: Repository,
+    repository: Repository<T>,
 ) : ChangeWindow(title, "Title")
-        where T : StringContent,
-              T : WithId {
+        where T : Entity {
     init {
         action = null
         window.isVisible = false

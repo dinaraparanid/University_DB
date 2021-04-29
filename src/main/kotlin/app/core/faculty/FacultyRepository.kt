@@ -6,7 +6,7 @@ import arrow.core.Either
 import java.sql.Connection
 
 internal class FacultyRepository(private val connection: Connection) :
-    Repository(connection),
+    Repository<Faculty>(connection),
     GettableIdByParams {
     companion object SQLCommands {
         private const val all = "SELECT * FROM Faculty"
@@ -33,7 +33,7 @@ internal class FacultyRepository(private val connection: Connection) :
             stm
                 .executeQuery(all)
                 .use { res ->
-                    mutableListOf<StringContent>()
+                    mutableListOf<Faculty>()
                         .apply {
                             while (res.next()) {
                                 val id = res.getInt("id")

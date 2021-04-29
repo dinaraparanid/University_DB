@@ -1,8 +1,7 @@
 package app.core.subject
 
-import app.core.polymorphism.StringContent
 import app.core.department.Department
-import app.core.polymorphism.WithId
+import app.core.polymorphism.Entity
 import app.core.teacher.Teacher
 
 internal data class Subject(
@@ -10,7 +9,7 @@ internal data class Subject(
     val title: String,
     val teachers: Array<Teacher>,
     val departments: Array<Department>
-) : StringContent, WithId {
+) : Entity() {
     override fun id() = id
 
     override fun equals(other: Any?) = when {

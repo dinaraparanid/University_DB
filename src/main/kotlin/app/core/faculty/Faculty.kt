@@ -1,14 +1,13 @@
 package app.core.faculty
 
-import app.core.polymorphism.StringContent
 import app.core.department.Department
-import app.core.polymorphism.WithId
+import app.core.polymorphism.Entity
 
 internal data class Faculty(
     val id: Int,
     val title: String,
     val departments: Array<Department>
-) : StringContent, WithId {
+) : Entity() {
     override fun id() = id
 
     override fun equals(other: Any?) = when {
