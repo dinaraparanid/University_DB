@@ -8,10 +8,10 @@ internal class StudentRepository(private val connection: Connection) :
     Repository<Student>(connection),
     GettableById<Student>,
     GettableIdByParams {
-    companion object SQLCommands {
+    private companion object SQLCommands {
         private const val all = "SELECT * FROM Student"
 
-        private const val filteredParams = "SELECT id FROM Teacher " +
+        private const val getIdByParams = "SELECT id FROM Student " +
                 "WHERE f_name = ? AND s_name = ? AND m_name = ? AND group_id = ?"
 
         private const val maxId = "SELECT MAX(id) as max_id FROM Student"
@@ -26,12 +26,12 @@ internal class StudentRepository(private val connection: Connection) :
         private const val remove = "DELETE FROM Student " +
                 "WHERE id = ?"
 
-        private const val param = "SELECT * FROM Student " +
+        private const val getByGroupId = "SELECT * FROM Student " +
                 "WHERE group_id = ?"
     }
 
     override fun getById(id: Int, mod: Int) = connection
-        .prepareStatement(param)
+        .prepareStatement(getByGroupId)
         .apply { setInt(1, id) }
         .use { stm ->
             stm
@@ -87,7 +87,7 @@ internal class StudentRepository(private val connection: Connection) :
     override fun update(vararg args: Either<String, Int>?) = action(update, *args)
 
     fun getIdByParams(name: String, family: String, father: String, groupId: Int) = getIdByParams(
-        filteredParams,
+        getIdByParams,
         connection,
         Either.Left(name),
         Either.Left(family),
@@ -95,7 +95,7 @@ internal class StudentRepository(private val connection: Connection) :
         Either.Right(groupId)
     )
 
-    fun add(vararg args: Either<String, Int>) = action(add, args[0], args[1], args[2], args[3], null, args[4])
-    fun remove(vararg args: Either<String, Int>?) = action(remove, *args)
+    fun add(vararg args: Either<String, Int>?) = action(add, args[0], args[1], args[2], args[3], null, args[4])
+    fun remove(id: Int) = action(remove, Either.Right(id))
     fun nextId() = nextId(maxId)
 }

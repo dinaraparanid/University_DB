@@ -9,12 +9,15 @@ internal class GroupRepository(private val connection: Connection) :
     Repository<Group>(connection),
     GettableById<Group>,
     GettableIdByParams {
-    companion object SQLCommands {
+    private companion object SQLCommands {
         private const val all = "SELECT * FROM Groups"
 
         private const val maxId = "SELECT MAX(id) as max_id FROM Groups"
 
-        private const val filteredTitle = "SELECT id FROM Speciality " +
+        private const val getTitleById = "SELECT title FROM Groups " +
+                "WHERE id = ?"
+
+        private const val getIdByTitle = "SELECT id FROM Groups " +
                 "WHERE title = ?"
 
         private const val add = "INSERT INTO Groups (id, title, speciality_id) " +
@@ -27,12 +30,12 @@ internal class GroupRepository(private val connection: Connection) :
         private const val remove = "DELETE FROM Groups " +
                 "WHERE id = ?"
 
-        private const val param = "SELECT * FROM Groups " +
+        private const val getBySpecId = "SELECT * FROM Groups " +
                 "WHERE speciality_id = ?"
     }
 
     override fun getById(id: Int, mod: Int) = connection
-        .prepareStatement(param)
+        .prepareStatement(getBySpecId)
         .apply { setInt(1, id) }
         .use { stm ->
             stm
@@ -82,8 +85,21 @@ internal class GroupRepository(private val connection: Connection) :
         }
 
     override fun update(vararg args: Either<String, Int>?) = action(update, *args)
-    fun add(vararg args: Either<String, Int>) = action(add, args[0], args[1], null)
-    fun remove(vararg args: Either<String, Int>?) = action(remove, *args)
+
+    fun getTitleById(id: Int): String = connection
+        .prepareStatement(getTitleById)
+        .apply { setInt(1, id) }
+        .use { stm ->
+            stm
+                .executeQuery()
+                .use { res ->
+                    res.next()
+                    res.getString("title")
+                }
+        }
+
+    fun add(vararg args: Either<String, Int>?) = action(add, args[0], args[1], null)
+    fun remove(id: Int) = action(remove, Either.Right(id))
     fun nextId() = nextId(maxId)
-    fun getIdByTitle(title: String) = getIdByParams(filteredTitle, connection, Either.Left(title))
+    fun getIdByTitle(title: String) = getIdByParams(getIdByTitle, connection, Either.Left(title))
 }

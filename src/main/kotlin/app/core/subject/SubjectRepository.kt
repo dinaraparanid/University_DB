@@ -9,14 +9,14 @@ internal class SubjectRepository(private val connection: Connection) :
     Repository<Subject>(connection),
     GettableById<Subject>,
     GettableIdByParams {
-    companion object SQLCommands {
+    private companion object SQLCommands {
         private const val all = "SELECT * FROM Subject"
 
-        private const val filtered = "SELECT * FROM Subject " +
+        private const val getById = "SELECT * FROM Subject " +
                 "WHERE id = ?"
 
-        private const val filteredTitle = "SELECT id FROM Subject " +
-                "WHERE title = ?"
+        private const val getTitleById = "SELECT title FROM Subject " +
+                "WHERE id = ?"
 
         private const val maxId = "SELECT MAX(id) as max_id FROM Subject"
 
@@ -30,15 +30,15 @@ internal class SubjectRepository(private val connection: Connection) :
         private const val remove = "DELETE FROM Subject " +
                 "WHERE id = ?"
 
-        private const val paramTeach = "SELECT teacher_id FROM Teach_Subj " +
-                "WHERE subject_id = ?"
+        private const val getIdByTeachId = "SELECT subject_id FROM Teach_Subj " +
+                "WHERE teacher_id = ?"
 
-        private const val paramDep = "SELECT teacher_id FROM Subj_Dep " +
-                "WHERE subject_id = ?"
+        private const val getIdByDepId = "SELECT subject_id FROM Subj_Dep " +
+                "WHERE department_id = ?"
     }
 
     override fun getById(id: Int, mod: Int) = connection
-        .prepareStatement(if (mod == 0) paramTeach else paramDep)
+        .prepareStatement(if (mod == 0) getIdByTeachId else getIdByDepId)
         .apply { setInt(1, id) }
         .use { stm ->
             stm
@@ -47,7 +47,7 @@ internal class SubjectRepository(private val connection: Connection) :
                     res.next()
 
                     connection
-                        .prepareStatement(filtered)
+                        .prepareStatement(getById)
                         .apply { res.getInt("subject_id") }
                         .use { stm ->
                             stm
@@ -99,8 +99,8 @@ internal class SubjectRepository(private val connection: Connection) :
         }
 
     override fun update(vararg args: Either<String, Int>?) = action(update, *args)
-    fun getByTitle(title: String) = getIdByParams(filteredTitle, connection, Either.Left(title))
-    fun add(vararg args: Either<String, Int>) = action(add, *args)
+    fun getByTitle(title: String) = getIdByParams(getTitleById, connection, Either.Left(title))
+    fun add(vararg args: Either<String, Int>?) = action(add, *args)
     fun remove(id: Int) = action(remove, Either.Right(id))
     fun nextId() = nextId(maxId)
 }

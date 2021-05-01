@@ -1,9 +1,10 @@
 package app
 
-import app.show.*
-import app.change.add.*
-import app.change.remove.*
-import app.change.update.*
+import app.gui.show.*
+import app.gui.change.add.*
+import app.gui.change.mtm.*
+import app.gui.change.remove.*
+import app.gui.change.update.*
 import java.awt.BorderLayout
 import java.awt.Rectangle
 import javax.swing.JFrame
@@ -31,6 +32,9 @@ object Program {
         add(SubjectAdd())
         add(DepartmentAdd())
         add(FacultyAdd())
+        add(AddingSubjectToDepartment())
+        add(AddingSubjectToTeacher())
+        add(AddingTeacherToSpeciality())
     }
 
     private val removeMenu = JMenu("Remove").apply {
@@ -41,6 +45,9 @@ object Program {
         add(SubjectRemove())
         add(DepartmentRemove())
         add(FacultyRemove())
+        add(RemovingSubjectFromDepartment())
+        add(RemovingSubjectFromTeacher())
+        add(RemovingTeacherFromSpeciality())
     }
 
     private val updateMenu = JMenu("Update").apply {

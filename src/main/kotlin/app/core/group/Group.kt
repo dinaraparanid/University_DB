@@ -1,5 +1,6 @@
 package app.core.group
 
+import app.core.Database
 import app.core.polymorphism.Entity
 import app.core.student.Student
 
@@ -35,5 +36,8 @@ internal data class Group(
         return result
     }
 
-    override fun asStringArray() = arrayOf(title)
+    override fun asStringArray() = arrayOf(
+        title,
+        Database.specialityRepository.getTitleById(specialityId)
+    )
 }

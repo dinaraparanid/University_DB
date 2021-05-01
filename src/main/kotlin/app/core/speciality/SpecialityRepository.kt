@@ -3,20 +3,22 @@ package app.core.speciality
 import app.core.Database
 import app.core.polymorphism.*
 import arrow.core.Either
-import arrow.core.Some
 import java.sql.Connection
 
 internal class SpecialityRepository(private val connection: Connection) :
     Repository<Speciality>(connection),
     GettableById<Speciality>,
     GettableIdByParams {
-    companion object SQLCommands {
+    private companion object SQLCommands {
         private const val all = "SELECT * FROM Speciality"
 
-        private const val filteredId = "SELECT * FROM Speciality " +
+        private const val getBydId = "SELECT * FROM Speciality " +
                 "WHERE id = ?"
 
-        private const val filteredTitle = "SELECT id FROM Speciality " +
+        private const val getTitleById = "SELECT title FROM Speciality " +
+                "WHERE id = ?"
+
+        private const val getIdByTitle = "SELECT id FROM Speciality " +
                 "WHERE title = ?"
 
         private const val maxId = "SELECT MAX(id) as max_id FROM Speciality"
@@ -31,7 +33,7 @@ internal class SpecialityRepository(private val connection: Connection) :
         private const val remove = "DELETE FROM Speciality " +
                 "WHERE id = ?"
 
-        private const val param = "SELECT speciality_id FROM Teach_Spec " +
+        private const val getIdByTeachId = "SELECT speciality_id FROM Teach_Spec " +
                 "WHERE teacher_id = ?"
 
         private const val maxIdTeachSpec = "SELECT MAX(id) as max_id FROM Teach_Spec"
@@ -40,11 +42,11 @@ internal class SpecialityRepository(private val connection: Connection) :
                 "VALUES (?, ?, ?)"
 
         private const val removeTeacher = "DELETE FROM Teach_Spec " +
-                "WHERE id = ?"
+                "WHERE teacher_id = ? AND speciality_id = ?"
     }
 
     override fun getById(id: Int, mod: Int) = connection
-        .prepareStatement(param)
+        .prepareStatement(getIdByTeachId)
         .apply { setInt(1, id) }
         .use { stm ->
             stm
@@ -53,7 +55,7 @@ internal class SpecialityRepository(private val connection: Connection) :
                     res.next()
 
                     connection
-                        .prepareStatement(filteredId)
+                        .prepareStatement(getBydId)
                         .apply { setInt(1, res.getInt("speciality_id")) }
                         .use { stm ->
                             stm
@@ -106,16 +108,34 @@ internal class SpecialityRepository(private val connection: Connection) :
 
     override fun update(vararg args: Either<String, Int>?) = action(update, *args)
 
+    fun getTitleById(id: Int): String = connection
+        .prepareStatement(getTitleById)
+        .apply { setInt(1, id) }
+        .use { stm ->
+            stm
+                .executeQuery()
+                .use { res ->
+                    res.next()
+                    res.getString("title")
+                }
+        }
+
     fun addTeacher(teacherId: Int, specialityId: Int) = action(
         addTeacher,
-        Some(teacherId).toEither { String() },
-        Some(specialityId).toEither { String() }
+        Either.Right(nextIdTeachSpec()),
+        Either.Right(teacherId),
+        Either.Right(specialityId)
+    )
+
+    fun removeTeacher(teacherId: Int, specialityId: Int) = action(
+        removeTeacher,
+        Either.Right(teacherId),
+        Either.Right(specialityId)
     )
 
     fun add(vararg args: Either<String, Int>?) = action(add, *args)
     fun remove(id: Int) = action(remove, Either.Right(id))
-    fun removeTeacher(id: Int) = action(removeTeacher, Either.Right(id))
     fun nextId() = nextId(maxId)
-    fun nextIdTeachSpec() = nextId(maxIdTeachSpec)
-    fun getIdByTitle(title: String) = getIdByParams(filteredTitle, connection, Either.Left(title))
+    fun getIdByTitle(title: String) = getIdByParams(getIdByTitle, connection, Either.Left(title))
+    private fun nextIdTeachSpec() = nextId(maxIdTeachSpec)
 }

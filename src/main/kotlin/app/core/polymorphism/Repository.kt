@@ -11,7 +11,7 @@ internal abstract class Repository<T>(private val connection: Connection) {
     abstract fun all(): Array<T>
     abstract fun update(vararg args: Either<String, Int>?): Option<Unit>
 
-    fun nextId(maxId: String) = connection
+    protected fun nextId(maxId: String) = connection
         .createStatement()
         .use { stm ->
             stm
@@ -26,7 +26,7 @@ internal abstract class Repository<T>(private val connection: Connection) {
                 }
         }
 
-    fun action(statement: String, vararg setters: Either<String, Int>?) = connection
+    protected fun action(statement: String, vararg setters: Either<String, Int>?) = connection
         .prepareStatement(statement)
         .apply { setters.forEachIndexed { ind, x -> setValOrNull(ind + 1, x) } }
         .use { stm ->
