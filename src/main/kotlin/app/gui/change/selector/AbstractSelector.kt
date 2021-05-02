@@ -2,6 +2,7 @@ package app.gui.change.selector
 
 import app.core.polymorphism.Entity
 import app.gui.show.AbstractTable
+import arrow.core.None
 import arrow.core.Option
 import arrow.core.Some
 import kotlinx.coroutines.GlobalScope
@@ -15,37 +16,37 @@ internal abstract class AbstractSelector<T>(
     val title: String,
     tab: AbstractTable<T>
 ) where T : Entity {
-    private val table = tab.apply {
+    private val table = tab.run {
         action = null
-        text = title
-        table.cellSelectionEnabled = true
 
-        table.selectionModel.addListSelectionListener {
-            cnt.getOrNull(table.selectedRow).let {
-                selectedId = when (it) {
-                    null -> null
-                    else -> Some(it.id())
+        table.apply {
+            cellSelectionEnabled = true
+            selectionModel.addListSelectionListener {
+                cnt.getOrNull(table.selectedRow).let {
+                    selectedId = when (it) {
+                        null -> None
+                        else -> Some(it.id())
+                    }
                 }
             }
         }
     }
 
-    private var selectedId: Option<Int>? = null
+    private var selectedId: Option<Int> = None
 
-    val window = JFrame(title)
-        .apply {
-            bounds = Rectangle(400, 300, 300, 400)
-            contentPane.add(
-                JScrollPane(table.table),
-                BorderLayout.CENTER
-            )
-        }
+    val window = JFrame(title).apply {
+        bounds = Rectangle(400, 300, 300, 400)
+        contentPane.add(
+            JScrollPane(table),
+            BorderLayout.CENTER
+        )
+    }
 
-    inline fun addSelectionListener(crossinline func: (selectedId: Int) -> Unit) {
+    inline fun addSelectionListener(crossinline func: (Int) -> Unit) {
         GlobalScope.launch {
             while (window.isVisible) {
                 if (selectedId is Some) {
-                    func(selectedId!!.orNull()!!)
+                    func(selectedId.orNull()!!)
                     break
                 }
             }

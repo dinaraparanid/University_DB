@@ -6,8 +6,8 @@ import app.core.polymorphism.Entity
 internal data class Faculty(
     val id: Int,
     val title: String,
-    val departments: Array<Department>
-) : Entity() {
+    val departments: Array<Department> = arrayOf()
+) : Entity {
     override fun id() = id
 
     override fun equals(other: Any?) = when {

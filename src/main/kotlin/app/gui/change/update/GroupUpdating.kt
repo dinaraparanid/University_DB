@@ -38,9 +38,10 @@ internal class GroupUpdating : ChangeWindow("Update Group", "Title", "Speciality
     }
 
     init {
+        action = null
         window.isVisible = false
 
-        addActionListener {
+        this.addActionListener {
             gs.window.isVisible = true
         }
 

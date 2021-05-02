@@ -1,7 +1,9 @@
 package app.core.faculty
 
 import app.core.Database
-import app.core.polymorphism.*
+import app.core.polymorphism.GettableIdByParams
+import app.core.polymorphism.Repository
+import app.core.polymorphism.getIdByParams
 import arrow.core.Either
 import java.sql.Connection
 
@@ -27,29 +29,23 @@ internal class FacultyRepository(private val connection: Connection) :
                 "WHERE id = ?"
     }
 
-    override fun all() = connection
-        .createStatement()
-        .use { stm ->
-            stm
-                .executeQuery(all)
-                .use { res ->
-                    mutableListOf<Faculty>()
-                        .apply {
-                            while (res.next()) {
-                                val id = res.getInt("id")
+    override fun all() = connection.createStatement().use { stm ->
+        stm.executeQuery(all).use { res ->
+            mutableListOf<Faculty>().apply {
+                while (res.next()) {
+                    val id = res.getInt("id")
 
-                                add(
-                                    Faculty(
-                                        id,
-                                        res.getString("title"),
-                                        Database.departmentRepository.getById(id)
-                                    )
-                                )
-                            }
-                        }
-                        .toTypedArray()
+                    add(
+                        Faculty(
+                            id,
+                            res.getString("title"),
+                            Database.departmentRepository.getById(id)
+                        )
+                    )
                 }
+            }.toTypedArray()
         }
+    }
 
     override fun update(vararg args: Either<String, Int>?) = action(update, *args)
     fun add(vararg args: Either<String, Int>?) = action(add, *args)

@@ -16,14 +16,14 @@ internal abstract class AbstractAdding(
     vararg args: String
 ) : ChangeWindow(title, *args) {
     init {
-        super.window.bounds = Rectangle(400, 300, 300, 100)
+        window.bounds = Rectangle(400, 300, 300, 100)
 
-        super.ok.addActionListener { e ->
-            if (e?.source === super.ok) {
+        ok.addActionListener { e ->
+            if (e?.source === ok) {
                 when (
                     addFunc(
                         mutableListOf<Either<String, Int>>(Either.Right(nextId))
-                            .apply { addAll(super.texts.map { Either.Left(it.text) }) }
+                            .apply { addAll(texts.map { Either.Left(it.text) }) }
                             .toTypedArray()
                     )
                 ) {
@@ -31,7 +31,7 @@ internal abstract class AbstractAdding(
                     else -> successMessage(successMessage)
                 }
 
-                super.window.isVisible = false
+                window.isVisible = false
             }
         }
 

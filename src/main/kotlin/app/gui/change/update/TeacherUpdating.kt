@@ -8,6 +8,7 @@ internal class TeacherUpdating : AbstractUpdating<Teacher>(
     "Update Teacher",
     TeacherSelector(),
     Database.teacherRepository::update,
+    "Teacher updated",
     "First Name",
     "Second Name",
     "Middle Name",

@@ -7,9 +7,9 @@ import app.core.teacher.Teacher
 internal data class Speciality(
     val id: Int,
     val title: String,
-    val groups: Array<Group>,
-    val teachers: Array<Teacher>
-) : Entity() {
+    val groups: Array<Group> = arrayOf(),
+    val teachers: Array<Teacher> = arrayOf()
+) : Entity {
     override fun id() = id
 
     override fun equals(other: Any?) = when {

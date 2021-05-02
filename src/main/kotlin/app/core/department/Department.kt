@@ -7,8 +7,8 @@ internal data class Department(
     val id: Int,
     val title: String,
     val facultyId: String,
-    val subjects: Array<Subject>
-) : Entity() {
+    val subjects: Array<Subject> = arrayOf()
+) : Entity {
     override fun id() = id
 
     override fun equals(other: Any?) = when {

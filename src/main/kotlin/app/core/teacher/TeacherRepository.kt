@@ -15,9 +15,6 @@ internal class TeacherRepository(private val connection: Connection) :
         private const val getById = "SELECT * FROM Teacher " +
                 "WHERE id = ?"
 
-        private const val getIdByParams = "SELECT id FROM Teacher " +
-                "WHERE f_name = ? AND s_name = ? AND m_name = ?"
-
         private const val maxId = "SELECT MAX(id) as max_id FROM Teacher"
 
         private const val add = "INSERT INTO Teacher (id, f_name, s_name, m_name, info) " +
@@ -49,68 +46,57 @@ internal class TeacherRepository(private val connection: Connection) :
         .prepareStatement(if (mod == 0) getIdBySpecId else getIdBySubjId)
         .apply { setInt(1, id) }
         .use { stm ->
-            stm
-                .executeQuery()
-                .use { res ->
-                    res.next()
-
-                    connection
+            stm.executeQuery().use { res ->
+                when {
+                    res.next() -> connection
                         .prepareStatement(getById)
                         .apply { setInt(1, res.getInt("teacher_id")) }
                         .use { stm ->
-                            stm
-                                .executeQuery()
-                                .use { res ->
-                                    mutableListOf<Teacher>()
-                                        .apply {
-                                            while (res.next()) {
-                                                add(
-                                                    Teacher(
-                                                        res.getInt("id"),
-                                                        res.getString("f_name"),
-                                                        res.getString("s_name"),
-                                                        res.getString("m_name"),
-                                                        res.getString("info"),
-                                                        arrayOf(),
-                                                        arrayOf(),
-                                                    )
-                                                )
-                                            }
-                                        }
-                                        .toTypedArray()
-                                }
-                        }
-                }
-
-        }
-
-    override fun all() = connection
-        .createStatement()
-        .use { stm ->
-            stm
-                .executeQuery(all)
-                .use { res ->
-                    mutableListOf<Teacher>()
-                        .apply {
-                            while (res.next()) {
-                                val id = res.getInt("id")
-
-                                add(
-                                    Teacher(
-                                        id,
-                                        res.getString("f_name"),
-                                        res.getString("s_name"),
-                                        res.getString("m_name"),
-                                        res.getString("info"),
-                                        Database.specialityRepository.getById(id),
-                                        Database.subjectRepository.getById(id),
-                                    )
-                                )
+                            stm.executeQuery().use { res ->
+                                mutableListOf<Teacher>().apply {
+                                    while (res.next()) {
+                                        add(
+                                            Teacher(
+                                                res.getInt("id"),
+                                                res.getString("f_name"),
+                                                res.getString("s_name"),
+                                                res.getString("m_name"),
+                                                res.getString("info"),
+                                                arrayOf(),
+                                                arrayOf(),
+                                            )
+                                        )
+                                    }
+                                }.toTypedArray()
                             }
                         }
-                        .toTypedArray()
+
+                    else -> arrayOf()
                 }
+            }
         }
+
+    override fun all() = connection.createStatement().use { stm ->
+        stm.executeQuery(all).use { res ->
+            mutableListOf<Teacher>().apply {
+                while (res.next()) {
+                    val id = res.getInt("id")
+
+                    add(
+                        Teacher(
+                            id,
+                            res.getString("f_name"),
+                            res.getString("s_name"),
+                            res.getString("m_name"),
+                            res.getString("info"),
+                            Database.specialityRepository.getById(id),
+                            Database.subjectRepository.getById(id, 0),
+                        )
+                    )
+                }
+            }.toTypedArray()
+        }
+    }
 
     override fun update(vararg args: Either<String, Int>?) = action(update, *args)
 
@@ -119,14 +105,6 @@ internal class TeacherRepository(private val connection: Connection) :
         Either.Right(nextIdTeachSubj()),
         Either.Right(teacherId),
         Either.Right(subjectId)
-    )
-
-    fun getIdByParams(name: String, family: String, father: String) = getIdByParams(
-        getIdByParams,
-        connection,
-        Either.Left(name),
-        Either.Left(family),
-        Either.Left(father)
     )
 
     fun removeSubject(teacherId: Int, subjectId: Int) = action(

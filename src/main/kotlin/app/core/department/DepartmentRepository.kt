@@ -1,22 +1,19 @@
 package app.core.department
 
 import app.core.Database
-import app.core.polymorphism.*
+import app.core.polymorphism.GettableById
+import app.core.polymorphism.Repository
 import arrow.core.Either
 import java.sql.Connection
 
 internal class DepartmentRepository(private val connection: Connection) :
     Repository<Department>(connection),
-    GettableById<Department>,
-    GettableIdByParams {
+    GettableById<Department> {
     private companion object SQLCommands {
         private const val all = "SELECT * FROM Department"
 
         private const val getById = "SELECT * FROM Department " +
                 "WHERE id = ?"
-
-        private const val getIdByTitle = "SELECT id FROM Department " +
-                "WHERE title = ?"
 
         private const val maxId = "SELECT MAX(id) as max_id FROM Department"
 
@@ -49,79 +46,59 @@ internal class DepartmentRepository(private val connection: Connection) :
         .prepareStatement(if (mod == 0) getIdByFacId else getIdBySubjId)
         .apply { setInt(1, id) }
         .use { stm ->
-            stm
-                .executeQuery()
-                .use { res ->
-                    res.next()
-
-                    when {
-                        res.isClosed -> arrayOf()
-
-                        else -> {
-                            connection
-                                .prepareStatement(getById)
-                                .apply { setInt(1, res.getInt(if (mod == 0) "id" else "department_id")) }
-                                .use { stm ->
-                                    stm
-                                        .executeQuery()
-                                        .use { res ->
-                                            mutableListOf<Department>()
-                                                .apply {
-                                                    while (res.next()) {
-                                                        add(
-                                                            Department(
-                                                                res.getInt("id"),
-                                                                res.getString("title"),
-                                                                res.getString("faculty_id"),
-                                                                arrayOf()
-                                                            )
-                                                        )
-                                                    }
-                                                }
-                                                .toTypedArray()
-                                        }
-                                }
-                        }
-                    }
-                }
-
-        }
-
-    override fun all() = connection
-        .createStatement()
-        .use { stm ->
-            stm
-                .executeQuery(all)
-                .use { res ->
-                    mutableListOf<Department>()
-                        .apply {
-                            while (res.next()) {
-                                val id = res.getInt("id")
-
-                                add(
-                                    Department(
-                                        id,
-                                        res.getString("title"),
-                                        res.getString("faculty_id"),
-                                        Database.subjectRepository.getById(id, 1)
-                                    )
-                                )
+            stm.executeQuery().use { res ->
+                when {
+                    res.next() -> connection
+                        .prepareStatement(getById)
+                        .apply { setInt(1, res.getInt(if (mod == 0) "id" else "department_id")) }
+                        .use { stm ->
+                            stm.executeQuery().use { res ->
+                                mutableListOf<Department>().apply {
+                                    while (res.next()) {
+                                        add(
+                                            Department(
+                                                res.getInt("id"),
+                                                res.getString("title"),
+                                                res.getString("faculty_id"),
+                                            )
+                                        )
+                                    }
+                                }.toTypedArray()
                             }
                         }
-                        .toTypedArray()
+
+                    else -> arrayOf()
                 }
+            }
         }
+
+    override fun all() = connection.createStatement().use { stm ->
+        stm.executeQuery(all).use { res ->
+            mutableListOf<Department>().apply {
+                while (res.next()) {
+                    val id = res.getInt("id")
+
+                    add(
+                        Department(
+                            id,
+                            res.getString("title"),
+                            res.getString("faculty_id"),
+                            Database.subjectRepository.getById(id, 1)
+                        )
+                    )
+                }
+            }.toTypedArray()
+        }
+    }
 
     override fun update(vararg args: Either<String, Int>?) = action(update, *args)
     fun add(vararg args: Either<String, Int>?) = action(add, args[0], args[1], null)
     fun remove(id: Int) = action(remove, Either.Right(id))
     fun nextId() = nextId(maxId)
-    fun getIdByTitle(title: String) = getIdByParams(getIdByTitle, connection, Either.Left(title))
-    private fun nextIdSubjDep() = nextId(maxIdSubjDep)
 
     fun addSubject(subjectId: Int, departmentId: Int) = action(
         addSubject,
-        Either.Right(nextIdSubjDep()),
+        Either.Right(nextId(maxIdSubjDep)),
         Either.Right(subjectId),
         Either.Right(departmentId)
     )

@@ -8,7 +8,7 @@ internal data class Mark(
     val studentId: Int,
     val subjectId: Int,
     val date: String
-) : Entity() {
+) : Entity {
     override fun id() = id
     override fun asStringArray() = arrayOf("$mark")
 }

@@ -3,9 +3,9 @@ package app.core.date
 import java.time.LocalDate
 
 internal class DateIterator(
-    val startDate: LocalDate,
-    val endDateInclusive: LocalDate,
-    val stepDays: Long
+    startDate: LocalDate,
+    private val endDateInclusive: LocalDate,
+    private val stepDays: Long
 ) : Iterator<LocalDate> {
     private var currentDate = startDate
 

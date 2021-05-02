@@ -7,4 +7,4 @@ internal class SubjectTable : AbstractTable<Subject>(
     "Subjects",
     Database.subjectRepository::all,
     "Title"
-) { init { text = "Subjects" } }
+)

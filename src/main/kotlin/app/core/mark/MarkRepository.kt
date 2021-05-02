@@ -24,29 +24,23 @@ internal class MarkRepository(private val connection: Connection) : Repository<M
         private const val maxId = "SELECT MAX(id) as max_id FROM Mark"
     }
 
-    override fun all() = connection
-        .createStatement()
-        .use { stm ->
-            stm
-                .executeQuery(all)
-                .use { res ->
-                    mutableListOf<Mark>()
-                        .apply {
-                            while (res.next()) {
-                                add(
-                                    Mark(
-                                        res.getInt("id"),
-                                        res.getInt("mark"),
-                                        res.getInt("student_id"),
-                                        res.getInt("subject_id"),
-                                        res.getString("date")
-                                    )
-                                )
-                            }
-                        }
-                        .toTypedArray()
+    override fun all() = connection.createStatement().use { stm ->
+        stm.executeQuery(all).use { res ->
+            mutableListOf<Mark>().apply {
+                while (res.next()) {
+                    add(
+                        Mark(
+                            res.getInt("id"),
+                            res.getInt("mark"),
+                            res.getInt("student_id"),
+                            res.getInt("subject_id"),
+                            res.getString("date")
+                        )
+                    )
                 }
+            }.toTypedArray()
         }
+    }
 
     override fun update(vararg args: Either<String, Int>?) = action(update, *args)
 
@@ -54,25 +48,21 @@ internal class MarkRepository(private val connection: Connection) : Repository<M
         .prepareStatement(allByStudent)
         .apply { setInt(1, studentId) }
         .use { stm ->
-            stm
-                .executeQuery(all)
-                .use { res ->
-                    mutableListOf<Mark>()
-                        .apply {
-                            while (res.next()) {
-                                add(
-                                    Mark(
-                                        res.getInt("id"),
-                                        res.getInt("mark"),
-                                        res.getInt("student_id"),
-                                        res.getInt("subject_id"),
-                                        res.getString("date")
-                                    )
-                                )
-                            }
-                        }
-                        .toTypedArray()
-                }
+            stm.executeQuery(all).use { res ->
+                mutableListOf<Mark>().apply {
+                    while (res.next()) {
+                        add(
+                            Mark(
+                                res.getInt("id"),
+                                res.getInt("mark"),
+                                res.getInt("student_id"),
+                                res.getInt("subject_id"),
+                                res.getString("date")
+                            )
+                        )
+                    }
+                }.toTypedArray()
+            }
         }
 
     fun add(vararg args: Either<String, Int>) = action(add, *args)

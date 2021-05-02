@@ -12,20 +12,14 @@ internal fun GettableIdByParams.getIdByParams(
     filteredTitle: String,
     connection: Connection,
     vararg params: Either<String, Int>?
-) =
-    connection
-        .prepareStatement(filteredTitle)
-        .apply { params.forEachIndexed { ind, p -> setValOrNull(ind, p) } }
-        .use { stm ->
-            stm
-                .executeQuery()
-                .use { res ->
-                    res.next()
-
-                    try {
-                        Some(res.getInt("id"))
-                    } catch (e: Exception) {
-                        None
-                    }
-                }
+) = connection
+    .prepareStatement(filteredTitle)
+    .apply { params.forEachIndexed { ind, p -> setValOrNull(ind, p) } }
+    .use { stm ->
+        stm.executeQuery().use { res ->
+            when {
+                res.next() -> Some(res.getInt("id"))
+                else -> None
+            }
         }
+    }

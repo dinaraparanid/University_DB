@@ -7,9 +7,9 @@ import app.core.teacher.Teacher
 internal data class Subject(
     val id: Int,
     val title: String,
-    val teachers: Array<Teacher>,
-    val departments: Array<Department>
-) : Entity() {
+    val teachers: Array<Teacher> = arrayOf(),
+    val departments: Array<Department> = arrayOf()
+) : Entity {
     override fun id() = id
 
     override fun equals(other: Any?) = when {

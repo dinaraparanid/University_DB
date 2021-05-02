@@ -14,12 +14,12 @@ internal abstract class AbstractUpdating<T : Entity>(
     title: String,
     selector: AbstractSelector<T>,
     updateFunc: (Array<out Either<String, Int>?>) -> Option<Unit>,
+    successMessage: String,
     vararg args: String
 ) : ChangeWindow(title, *args) {
     init {
         action = null
         window.isVisible = false
-        text = title
 
         this.addActionListener {
             selector.window.isVisible = true
@@ -43,12 +43,14 @@ internal abstract class AbstractUpdating<T : Entity>(
                         )
                     ) {
                         None -> failureMessage()
-                        else -> successMessage("${title.trim().split(' ').last()} updated")
+                        else -> successMessage(successMessage)
                     }
 
                     window.isVisible = false
                 }
             }
         }
+
+        text = title
     }
 }

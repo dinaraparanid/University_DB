@@ -3,13 +3,15 @@ package app.core.group
 import app.core.Database
 import app.core.polymorphism.Entity
 import app.core.student.Student
+import arrow.core.None
+import arrow.core.Some
 
 internal data class Group(
     val id: Int,
     val title: String,
     val specialityId: Int,
-    val students: Array<Student>
-) : Entity() {
+    val students: Array<Student> = arrayOf()
+) : Entity {
     override fun id() = id
 
     override fun equals(other: Any?) = when {
@@ -38,6 +40,11 @@ internal data class Group(
 
     override fun asStringArray() = arrayOf(
         title,
-        Database.specialityRepository.getTitleById(specialityId)
+        Database.specialityRepository.getTitleById(specialityId).let {
+            when (it) {
+                None -> "None"
+                is Some -> it.value
+            }
+        }
     )
 }

@@ -10,9 +10,9 @@ internal data class Teacher(
     val secondName: String,
     val middleName: String,
     val info: String,
-    val specialities: Array<Speciality>,
-    val subjects: Array<Subject>
-) : Entity() {
+    val specialities: Array<Speciality> = arrayOf(),
+    val subjects: Array<Subject> = arrayOf()
+) : Entity {
     override fun id() = id
 
     override fun equals(other: Any?) = when {

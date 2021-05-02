@@ -1,6 +1,6 @@
 package app.core.polymorphism
 
-internal abstract class Entity {
-    abstract fun id(): Int
-    abstract fun asStringArray(): Array<String>
+internal interface Entity {
+    fun id(): Int
+    fun asStringArray(): Array<String>
 }

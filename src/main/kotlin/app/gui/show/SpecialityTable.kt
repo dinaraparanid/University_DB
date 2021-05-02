@@ -7,4 +7,4 @@ internal class SpecialityTable : AbstractTable<Speciality>(
     "Specialities",
     Database.specialityRepository::all,
     "Title"
-) { init { text = "Specialities" } }
+)

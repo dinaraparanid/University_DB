@@ -1,6 +1,7 @@
 package app.gui.change
 
 import java.awt.GridLayout
+import java.awt.Rectangle
 import java.awt.event.ActionEvent
 import javax.swing.*
 
@@ -27,6 +28,8 @@ internal abstract class ChangeWindow(
     }
 
     init {
+        window.bounds = Rectangle(400, 300, 300, 200)
+
         action = object : AbstractAction() {
             override fun actionPerformed(e: ActionEvent?) {
                 window.isVisible = true

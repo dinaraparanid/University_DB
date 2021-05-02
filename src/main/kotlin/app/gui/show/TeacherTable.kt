@@ -9,4 +9,4 @@ internal class TeacherTable : AbstractTable<Teacher>(
     "First Name",
     "Second Name",
     "Middle Name",
-) { init { text = "Teachers" } }
+)

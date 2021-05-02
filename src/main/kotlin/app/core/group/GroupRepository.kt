@@ -3,6 +3,8 @@ package app.core.group
 import app.core.Database
 import app.core.polymorphism.*
 import arrow.core.Either
+import arrow.core.None
+import arrow.core.Some
 import java.sql.Connection
 
 internal class GroupRepository(private val connection: Connection) :
@@ -38,64 +40,52 @@ internal class GroupRepository(private val connection: Connection) :
         .prepareStatement(getBySpecId)
         .apply { setInt(1, id) }
         .use { stm ->
-            stm
-                .executeQuery()
-                .use { res ->
-                    mutableListOf<Group>()
-                        .apply {
-                            while (res.next()) {
-                                add(
-                                    Group(
-                                        res.getInt("id"),
-                                        res.getString("title"),
-                                        res.getInt("speciality_id"),
-                                        arrayOf()
-                                    )
-                                )
-                            }
-                        }
-                        .toTypedArray()
-                }
-
+            stm.executeQuery().use { res ->
+                mutableListOf<Group>().apply {
+                    while (res.next()) {
+                        add(
+                            Group(
+                                res.getInt("id"),
+                                res.getString("title"),
+                                res.getInt("speciality_id"),
+                            )
+                        )
+                    }
+                }.toTypedArray()
+            }
         }
 
-    override fun all() = connection
-        .createStatement()
-        .use { stm ->
-            stm
-                .executeQuery(all)
-                .use { res ->
-                    mutableListOf<Group>()
-                        .apply {
-                            while (res.next()) {
-                                val id = res.getInt("id")
+    override fun all() = connection.createStatement().use { stm ->
+        stm.executeQuery(all).use { res ->
+            mutableListOf<Group>().apply {
+                while (res.next()) {
+                    val id = res.getInt("id")
 
-                                add(
-                                    Group(
-                                        id,
-                                        res.getString("title"),
-                                        res.getInt("speciality_id"),
-                                        Database.studentRepository.getById(id)
-                                    )
-                                )
-                            }
-                        }
-                        .toTypedArray()
+                    add(
+                        Group(
+                            id,
+                            res.getString("title"),
+                            res.getInt("speciality_id"),
+                            Database.studentRepository.getById(id)
+                        )
+                    )
                 }
+            }.toTypedArray()
         }
+    }
 
     override fun update(vararg args: Either<String, Int>?) = action(update, *args)
 
-    fun getTitleById(id: Int): String = connection
+    fun getTitleById(id: Int) = connection
         .prepareStatement(getTitleById)
         .apply { setInt(1, id) }
         .use { stm ->
-            stm
-                .executeQuery()
-                .use { res ->
-                    res.next()
-                    res.getString("title")
+            stm.executeQuery().use { res ->
+                when {
+                    res.next() -> Some(res.getString("title"))
+                    else -> None
                 }
+            }
         }
 
     fun add(vararg args: Either<String, Int>?) = action(add, args[0], args[1], null)

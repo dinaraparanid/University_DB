@@ -8,4 +8,4 @@ internal class GroupTable : AbstractTable<Group>(
     Database.groupRepository::all,
     "Title",
     "Speciality Title"
-) { init { text = "Groups" } }
+)

@@ -43,43 +43,39 @@ internal class MarkTable : JMenuItem() {
                     }
                     .sortedWith { f, s -> f.compareTo(s) }
                     .forEach {
-                        val c1 = mapContent.getOrPut(it.first) { sortedMapOf() }
-                        mapContent[it.first] = c1
+                        mapContent.getOrPut(it.first) { sortedMapOf() }
 
-                        val c2 = mapContent[it.first]!!.getOrPut(it.second) { "" }
-                        mapContent[it.first]!![it.second] = c2 + "${it.third} "
+                        mapContent[it.first]!![it.second] =
+                            mapContent[it.first]!!.getOrPut(it.second) { "" } + "${it.third} "
                     }
             }
 
         val subjects = mapContent.toList().map { it.first }.distinct()
 
-        return JFrame("Marks")
-            .apply {
-                bounds = Rectangle(200, 200, 800, 700)
-                contentPane.add(
-                    JScrollPane(
-                        JTable(
-                            Array(8) { Array(subjects.size) { "" } }.also { content ->
-                                var ind = 0
+        return JFrame("Marks").apply {
+            bounds = Rectangle(200, 200, 800, 700)
+            contentPane.add(
+                JScrollPane(
+                    JTable(
+                        Array(8) { Array(subjects.size) { "" } }.also { content ->
+                            var ind = 0
 
-                                mapContent.forEach { (subject, x) ->
-                                    content[ind++] = mutableListOf(subject).apply { addAll(x.values) }.toTypedArray()
-                                }
-                            },
-                            mutableListOf("Subject")
-                                .apply {
-                                    addAll(
-                                        range
-                                            .map { Date(it.dayOfMonth, it.monthValue, it.year).toString() }
-                                            .toTypedArray()
-                                    )
-                                }
-                                .toTypedArray()
-                        )
-                    ),
-                    BorderLayout.CENTER
-                )
-            }
+                            mapContent.forEach { (subject, x) ->
+                                content[ind++] = mutableListOf(subject).apply { addAll(x.values) }.toTypedArray()
+                            }
+                        },
+                        mutableListOf("Subject").apply {
+                            addAll(
+                                range
+                                    .map { Date(it.dayOfMonth, it.monthValue, it.year).toString() }
+                                    .toTypedArray()
+                            )
+                        }.toTypedArray()
+                    )
+                ),
+                BorderLayout.CENTER
+            )
+        }
     }
 
     init {

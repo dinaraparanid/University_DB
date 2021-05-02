@@ -10,4 +10,4 @@ internal class StudentTable : AbstractTable<Student>(
     "Second Name",
     "Middle Name",
     "Group Title"
-) { init { text = "Students" } }
+)

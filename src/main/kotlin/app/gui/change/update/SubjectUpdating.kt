@@ -8,4 +8,6 @@ internal class SubjectUpdating : AbstractUpdating<Subject>(
     "Update Subject",
     SubjectSelector(),
     Database.subjectRepository::update,
-) { init { text = "Update Subject" } }
+    "Subject updated",
+    "Title"
+)

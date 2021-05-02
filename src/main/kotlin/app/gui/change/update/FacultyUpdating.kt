@@ -8,5 +8,6 @@ internal class FacultyUpdating : AbstractUpdating<Faculty>(
     "Update Faculty",
     FacultySelector(),
     Database.facultyRepository::update,
+    "Faculty updated",
     "Title"
-) { init { text = "Update Faculty" } }
+)
