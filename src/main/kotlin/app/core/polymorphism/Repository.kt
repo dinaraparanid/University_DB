@@ -28,6 +28,7 @@ internal abstract class Repository<T>(private val connection: Connection) {
                 stm.execute()
                 Some(Unit)
             } catch (e: Exception) {
+                println(e.toString())
                 None
             }
         }

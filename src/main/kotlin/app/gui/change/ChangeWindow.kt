@@ -1,14 +1,14 @@
 package app.gui.change
 
+import app.core.polymorphism.Showable
 import java.awt.GridLayout
 import java.awt.Rectangle
-import java.awt.event.ActionEvent
 import javax.swing.*
 
 internal abstract class ChangeWindow(
     title: String,
     vararg args: String,
-) : JMenuItem() {
+) : Showable {
     val ok = JButton("Ok")
     val texts = mutableListOf<JTextField>()
 
@@ -27,13 +27,8 @@ internal abstract class ChangeWindow(
         contentPane.add(panel)
     }
 
-    init {
-        window.bounds = Rectangle(400, 300, 300, 200)
-
-        action = object : AbstractAction() {
-            override fun actionPerformed(e: ActionEvent?) {
-                window.isVisible = true
-            }
-        }
+    override fun show() = window.run {
+        bounds = Rectangle(400, 300, 300, 200)
+        isVisible = true
     }
 }

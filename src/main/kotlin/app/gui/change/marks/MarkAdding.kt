@@ -54,14 +54,7 @@ internal class MarkAdding : ChangeWindow("Add Mark", "Mark") {
         }
     }
 
-    init {
-        action = null
-        window.isVisible = false
-
-        addActionListener {
-            studentSelector.window.isVisible = true
-        }
-
-        text = "Add Mark"
+    override fun show() {
+        studentSelector.window.isVisible = true
     }
 }

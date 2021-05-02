@@ -12,45 +12,40 @@ import java.awt.Rectangle
 
 internal abstract class AbstractUpdating<T : Entity>(
     title: String,
-    selector: AbstractSelector<T>,
+    private val selector: AbstractSelector<T>,
     updateFunc: (Array<out Either<String, Int>?>) -> Option<Unit>,
     successMessage: String,
     vararg args: String
 ) : ChangeWindow(title, *args) {
     init {
-        action = null
-        window.isVisible = false
+        selector.addSelectionListener { selectedId ->
+            selector.window.isVisible = false
+            window.bounds = Rectangle(400, 300, 300, 100)
+            window.isVisible = true
 
-        this.addActionListener {
-            selector.window.isVisible = true
-
-            selector.addSelectionListener { selectedId ->
-                selector.window.isVisible = false
-                window.bounds = Rectangle(400, 300, 300, 100)
-                window.isVisible = true
-
-                ok.addActionListener {
-                    when (
-                        updateFunc(
-                            texts
-                                .map {
-                                    val x: Either<String, Int> = Either.Left(it.text)
-                                    x
-                                }
-                                .toMutableList()
-                                .apply { add(Either.Right(selectedId)) }
-                                .toTypedArray(),
-                        )
-                    ) {
-                        None -> failureMessage()
-                        else -> successMessage(successMessage)
-                    }
-
-                    window.isVisible = false
+            ok.addActionListener {
+                when (
+                    updateFunc(
+                        texts
+                            .map {
+                                val x: Either<String, Int> = Either.Left(it.text)
+                                x
+                            }
+                            .toMutableList()
+                            .apply { add(Either.Right(selectedId)) }
+                            .toTypedArray(),
+                    )
+                ) {
+                    None -> failureMessage()
+                    else -> successMessage(successMessage)
                 }
+
+                window.isVisible = false
             }
         }
+    }
 
-        text = title
+    override fun show() {
+        selector.window.isVisible = true
     }
 }

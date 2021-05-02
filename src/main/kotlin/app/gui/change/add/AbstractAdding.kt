@@ -6,7 +6,6 @@ import app.successMessage
 import arrow.core.Either
 import arrow.core.None
 import arrow.core.Option
-import java.awt.Rectangle
 
 internal abstract class AbstractAdding(
     title: String,
@@ -16,8 +15,6 @@ internal abstract class AbstractAdding(
     vararg args: String
 ) : ChangeWindow(title, *args) {
     init {
-        window.bounds = Rectangle(400, 300, 300, 100)
-
         ok.addActionListener { e ->
             if (e?.source === ok) {
                 when (
@@ -34,7 +31,5 @@ internal abstract class AbstractAdding(
                 window.isVisible = false
             }
         }
-
-        text = title
     }
 }

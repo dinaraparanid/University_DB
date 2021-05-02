@@ -5,7 +5,6 @@ import app.core.Database
 import app.core.speciality.Speciality
 
 internal class SpecialityRemoving : AbstractRemoving<Speciality>(
-    "Remove Speciality",
     SpecialitySelector(),
     Database.specialityRepository::remove,
     "Speciality removed"

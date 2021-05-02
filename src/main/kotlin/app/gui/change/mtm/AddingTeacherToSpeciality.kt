@@ -7,7 +7,6 @@ import app.core.speciality.Speciality
 import app.core.teacher.Teacher
 
 internal class AddingTeacherToSpeciality : AbstractMTM<Speciality, Teacher>(
-    "Add Teacher to Speciality",
     SpecialitySelector(),
     TeacherSelector(),
     Database.specialityRepository::addTeacher,

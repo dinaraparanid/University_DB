@@ -37,13 +37,7 @@ internal class DepartmentUpdating : ChangeWindow("Update Department", "Title", "
         }
     }
 
-    init {
-        window.isVisible = false
-
-        addActionListener {
-            ds.window.isVisible = true
-        }
-
-        text = "Update Department"
+    override fun show() {
+        ds.window.isVisible = true
     }
 }

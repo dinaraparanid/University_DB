@@ -7,7 +7,6 @@ import app.core.speciality.Speciality
 import app.core.teacher.Teacher
 
 internal class RemovingTeacherFromSpeciality : AbstractMTM<Speciality, Teacher>(
-    "Remove Teacher from Speciality",
     SpecialitySelector(),
     TeacherSelector(),
     Database.specialityRepository::removeTeacher,

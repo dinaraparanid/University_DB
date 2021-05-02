@@ -11,28 +11,28 @@ import java.awt.BorderLayout
 import java.awt.Rectangle
 import javax.swing.JFrame
 import javax.swing.JScrollPane
+import javax.swing.JTable
 
 internal abstract class AbstractSelector<T>(
     val title: String,
-    tab: AbstractTable<T>
+    private val tab: AbstractTable<T>
 ) where T : Entity {
-    private val table = tab.run {
-        action = null
-
-        table.apply {
-            cellSelectionEnabled = true
-            selectionModel.addListSelectionListener {
-                cnt.getOrNull(table.selectedRow).let {
-                    selectedId = when (it) {
-                        null -> None
-                        else -> Some(it.id())
+    private val table: JTable
+        get() = tab.run {
+            table().apply {
+                cellSelectionEnabled = true
+                selectionModel.addListSelectionListener {
+                    cnt.getOrNull(selectedRow).let {
+                        selectedId = when (it) {
+                            null -> None
+                            else -> Some(it.id())
+                        }
                     }
                 }
             }
         }
-    }
 
-    private var selectedId: Option<Int> = None
+    private var selectedId: Option<Int>? = null
 
     val window = JFrame(title).apply {
         bounds = Rectangle(400, 300, 300, 400)
@@ -44,9 +44,15 @@ internal abstract class AbstractSelector<T>(
 
     inline fun addSelectionListener(crossinline func: (Int) -> Unit) {
         GlobalScope.launch {
-            while (window.isVisible) {
+            while (true) {
+
+                // I don't know why, but it helps to run new coroutines.
+                // So, don't remove this print (don't work without it)
+
+                print("")
+
                 if (selectedId is Some) {
-                    func(selectedId.orNull()!!)
+                    func(selectedId!!.orNull()!!)
                     break
                 }
             }

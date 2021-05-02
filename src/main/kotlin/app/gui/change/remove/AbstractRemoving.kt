@@ -2,18 +2,17 @@ package app.gui.change.remove
 
 import app.gui.change.selector.AbstractSelector
 import app.core.polymorphism.Entity
+import app.core.polymorphism.Showable
 import app.failureMessage
 import app.successMessage
 import arrow.core.None
 import arrow.core.Option
-import javax.swing.JMenuItem
 
 internal abstract class AbstractRemoving<F : Entity>(
-    title: String,
     s: AbstractSelector<F>,
     removeFunc: (Int) -> Option<Unit>,
     successMessage: String
-) : JMenuItem() {
+) : Showable {
     private val selector = s.apply {
         addSelectionListener { selectedId ->
             when (removeFunc(selectedId)) {
@@ -23,11 +22,7 @@ internal abstract class AbstractRemoving<F : Entity>(
         }
     }
 
-    init {
-        this.addActionListener {
-            selector.window.isVisible = true
-        }
-
-        text = title
+    override fun show() {
+        selector.window.isVisible = true
     }
 }

@@ -10,11 +10,10 @@ import java.awt.Rectangle
 import java.time.LocalDate
 import java.util.SortedMap
 import javax.swing.JFrame
-import javax.swing.JMenuItem
 import javax.swing.JScrollPane
 import javax.swing.JTable
 
-internal class MarkTable : JMenuItem() {
+internal class MarkTable {
     private val ss = StudentSelector().apply {
         addSelectionListener { selectedId ->
             window.isVisible = false
@@ -30,10 +29,7 @@ internal class MarkTable : JMenuItem() {
                 Database
                     .markRepository
                     .allByStudent(studentId)
-                    .filter {
-                        val s = it.date.trim().split('/')
-                        Date(s[0].toInt(), s[1].toInt(), s[2].toInt()).toLocalDate() in range
-                    }
+                    .filter { Date.fromStr(it.date).orNull()!!.toLocalDate() in range }
                     .map {
                         Triple(
                             Database.subjectRepository.getTitleById(it.subjectId),
@@ -78,11 +74,7 @@ internal class MarkTable : JMenuItem() {
         }
     }
 
-    init {
-        addActionListener {
-            ss.window.isVisible = true
-        }
-
-        text = "Student's marks"
+    fun show() {
+        ss.window.isVisible = true
     }
 }

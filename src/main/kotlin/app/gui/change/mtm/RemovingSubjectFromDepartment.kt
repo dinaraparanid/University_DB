@@ -7,7 +7,6 @@ import app.core.department.Department
 import app.core.subject.Subject
 
 internal class RemovingSubjectFromDepartment : AbstractMTM<Department, Subject>(
-    "Remove Subject from Department",
     DepartmentSelector(),
     SubjectSelector(),
     Database.departmentRepository::removeSubject,

@@ -37,14 +37,7 @@ internal class GroupUpdating : ChangeWindow("Update Group", "Title", "Speciality
         }
     }
 
-    init {
-        action = null
-        window.isVisible = false
-
-        this.addActionListener {
-            gs.window.isVisible = true
-        }
-
-        text = "Update Group"
+    override fun show() {
+        gs.window.isVisible = true
     }
 }

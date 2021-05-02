@@ -29,7 +29,6 @@ internal data class Date(private var day: Int, private var month: Int, private v
     }
 
     override fun compareTo(other: Date) = when {
-
         year < other.year -> -1
         year > other.year -> 1
         else -> when {

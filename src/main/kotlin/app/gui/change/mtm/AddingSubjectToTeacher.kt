@@ -7,7 +7,6 @@ import app.core.subject.Subject
 import app.core.teacher.Teacher
 
 internal class AddingSubjectToTeacher : AbstractMTM<Teacher, Subject>(
-    "Add Subject to Teacher",
     TeacherSelector(),
     SubjectSelector(),
     Database.teacherRepository::addSubject,

@@ -63,14 +63,7 @@ internal abstract class AbstractChange(
         }
     }
 
-    init {
-        action = null
-        window.isVisible = false
-
-        this.addActionListener {
-            studentSelector.window.isVisible = true
-        }
-
-        text = title
+    override fun show() {
+        studentSelector.window.isVisible = true
     }
 }

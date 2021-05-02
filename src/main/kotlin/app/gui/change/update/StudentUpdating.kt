@@ -48,13 +48,7 @@ internal class StudentUpdating :
         }
     }
 
-    init {
-        window.isVisible = false
-
-        addActionListener {
-            ss.window.isVisible = true
-        }
-
-        text = "Update Student"
+    override fun show() {
+        ss.window.isVisible = true
     }
 }

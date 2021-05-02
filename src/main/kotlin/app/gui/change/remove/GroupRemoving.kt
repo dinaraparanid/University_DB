@@ -5,7 +5,6 @@ import app.core.group.Group
 import app.gui.change.selector.GroupSelector
 
 internal class GroupRemoving : AbstractRemoving<Group>(
-    "Remove Group",
     GroupSelector(),
     Database.groupRepository::remove,
     "Group removed"
