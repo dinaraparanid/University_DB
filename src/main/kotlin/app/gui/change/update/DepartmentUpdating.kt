@@ -1,7 +1,7 @@
 package app.gui.change.update
 
 import app.gui.change.ChangeWindow
-import app.gui.change.selector.StudentSelector
+import app.gui.change.selector.DepartmentSelector
 import app.core.Database
 import app.failureMessage
 import app.successMessage
@@ -9,37 +9,26 @@ import arrow.core.Either
 import arrow.core.None
 import arrow.core.Some
 
-internal class StudentUpdate :
-    ChangeWindow(
-        "Update Student",
-        "First Name",
-        "Second Name",
-        "Middle Name",
-        "Group Title",
-        "Information"
-    ) {
-    private val ss = StudentSelector().also { ss ->
-        ss.addSelectionListener { selectedId ->
-            ss.window.isVisible = false
+internal class DepartmentUpdating : ChangeWindow("Update Department", "Title", "Faculty title") {
+    private val ds = DepartmentSelector().also { ds ->
+        ds.addSelectionListener { selectedId ->
+            ds.window.isVisible = false
             window.isVisible = true
 
             ok.addActionListener {
-                Database.studentRepository.update(
+                Database.departmentRepository.update(
                     Either.Left(texts[0].text),
-                    Either.Left(texts[1].text),
-                    Either.Left(texts[2].text),
-                    Database.groupRepository.getIdByTitle(texts[3].text).let {
+                    Database.facultyRepository.getIdByTitle(texts[1].text).let {
                         when (it) {
                             None -> null
                             is Some -> Either.Right(it.value)
                         }
                     },
-                    Either.Left(texts[4].text),
                     Some(selectedId).toEither { String() }
                 ).let { res ->
                     when (res) {
                         None -> failureMessage()
-                        is Some -> successMessage("Student updated")
+                        else -> successMessage("Department updated")
                     }
 
                     window.isVisible = false
@@ -52,9 +41,9 @@ internal class StudentUpdate :
         window.isVisible = false
 
         addActionListener {
-            ss.window.isVisible = true
+            ds.window.isVisible = true
         }
 
-        text = "Update Student"
+        text = "Update Department"
     }
 }

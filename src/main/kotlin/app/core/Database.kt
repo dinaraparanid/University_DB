@@ -3,6 +3,7 @@ package app.core
 import app.core.department.DepartmentRepository
 import app.core.faculty.FacultyRepository
 import app.core.group.GroupRepository
+import app.core.mark.MarkRepository
 import app.core.speciality.SpecialityRepository
 import app.core.student.StudentRepository
 import app.core.subject.SubjectRepository
@@ -30,4 +31,5 @@ internal object Database {
     val subjectRepository = SubjectRepository(connection)
     val departmentRepository = DepartmentRepository(connection)
     val facultyRepository = FacultyRepository(connection)
+    val markRepository = MarkRepository(connection)
 }

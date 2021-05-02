@@ -9,7 +9,7 @@ import arrow.core.Either
 import arrow.core.None
 import arrow.core.Some
 
-internal class GroupUpdate : ChangeWindow("Update Group", "Title", "Speciality title") {
+internal class GroupUpdating : ChangeWindow("Update Group", "Title", "Speciality title") {
     private val gs = GroupSelector().also { gs ->
         gs.addSelectionListener { selectedId ->
             gs.window.isVisible = false

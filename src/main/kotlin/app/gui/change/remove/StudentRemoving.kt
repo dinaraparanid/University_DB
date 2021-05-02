@@ -4,7 +4,7 @@ import app.core.Database
 import app.core.student.Student
 import app.gui.change.selector.StudentSelector
 
-internal class StudentRemove : AbstractRemove<Student>(
+internal class StudentRemoving : AbstractRemoving<Student>(
     "Remove Student",
     StudentSelector(),
     Database.studentRepository::remove,

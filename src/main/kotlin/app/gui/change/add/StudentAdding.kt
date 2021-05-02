@@ -2,7 +2,7 @@ package app.gui.change.add
 
 import app.core.Database
 
-internal class StudentAdd : AbstractAdd(
+internal class StudentAdding : AbstractAdding(
     "Add Student",
     Database.studentRepository.nextId(),
     Database.studentRepository::add,

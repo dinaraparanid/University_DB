@@ -18,7 +18,7 @@ internal fun GettableIdByParams.getIdByParams(
         .apply { params.forEachIndexed { ind, p -> setValOrNull(ind, p) } }
         .use { stm ->
             stm
-                .executeQuery(filteredTitle)
+                .executeQuery()
                 .use { res ->
                     res.next()
 

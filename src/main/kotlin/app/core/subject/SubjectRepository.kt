@@ -2,7 +2,10 @@ package app.core.subject
 
 import app.core.Database
 import app.core.polymorphism.*
+import app.setValOrNull
 import arrow.core.Either
+import arrow.core.None
+import arrow.core.Some
 import java.sql.Connection
 
 internal class SubjectRepository(private val connection: Connection) :
@@ -14,6 +17,9 @@ internal class SubjectRepository(private val connection: Connection) :
 
         private const val getById = "SELECT * FROM Subject " +
                 "WHERE id = ?"
+
+        private const val getIdByTitle = "SELECT id FROM Subject " +
+                "WHERE title = ?"
 
         private const val getTitleById = "SELECT title FROM Subject " +
                 "WHERE id = ?"
@@ -99,8 +105,20 @@ internal class SubjectRepository(private val connection: Connection) :
         }
 
     override fun update(vararg args: Either<String, Int>?) = action(update, *args)
-    fun getByTitle(title: String) = getIdByParams(getTitleById, connection, Either.Left(title))
+    fun getIdByTitle(title: String) = getIdByParams(getIdByTitle, connection, Either.Left(title))
     fun add(vararg args: Either<String, Int>?) = action(add, *args)
     fun remove(id: Int) = action(remove, Either.Right(id))
     fun nextId() = nextId(maxId)
+
+    fun getTitleById(id: Int): String = connection
+        .prepareStatement(getTitleById)
+        .apply { setInt(1, id) }
+        .use { stm ->
+            stm
+                .executeQuery()
+                .use { res ->
+                    res.next()
+                    res.getString("title")
+                }
+        }
 }

@@ -8,7 +8,7 @@ import arrow.core.None
 import arrow.core.Option
 import javax.swing.JMenuItem
 
-internal abstract class AbstractRemove<F : Entity>(
+internal abstract class AbstractRemoving<F : Entity>(
     title: String,
     s: AbstractSelector<F>,
     removeFunc: (Int) -> Option<Unit>,

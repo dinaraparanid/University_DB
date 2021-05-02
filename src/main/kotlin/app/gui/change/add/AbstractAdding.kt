@@ -8,7 +8,7 @@ import arrow.core.None
 import arrow.core.Option
 import java.awt.Rectangle
 
-internal abstract class AbstractAdd(
+internal abstract class AbstractAdding(
     title: String,
     nextId: Int,
     addFunc: (Array<out Either<String, Int>?>) -> Option<Unit>,

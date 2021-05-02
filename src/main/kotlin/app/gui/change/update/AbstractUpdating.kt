@@ -10,7 +10,7 @@ import arrow.core.None
 import arrow.core.Option
 import java.awt.Rectangle
 
-internal abstract class AbstractUpdate<T : Entity>(
+internal abstract class AbstractUpdating<T : Entity>(
     title: String,
     selector: AbstractSelector<T>,
     updateFunc: (Array<out Either<String, Int>?>) -> Option<Unit>,
@@ -30,23 +30,23 @@ internal abstract class AbstractUpdate<T : Entity>(
                 window.isVisible = true
 
                 ok.addActionListener {
-                    updateFunc(
-                        texts
-                            .map {
-                                val x: Either<String, Int> = Either.Left(it.text)
-                                x
-                            }
-                            .toMutableList()
-                            .apply { add(Either.Right(selectedId)) }
-                            .toTypedArray(),
-                    ).let { res ->
-                        when (res) {
-                            None -> failureMessage()
-                            else -> successMessage("${title.trim().split(' ').last()} updated")
-                        }
-
-                        window.isVisible = false
+                    when (
+                        updateFunc(
+                            texts
+                                .map {
+                                    val x: Either<String, Int> = Either.Left(it.text)
+                                    x
+                                }
+                                .toMutableList()
+                                .apply { add(Either.Right(selectedId)) }
+                                .toTypedArray(),
+                        )
+                    ) {
+                        None -> failureMessage()
+                        else -> successMessage("${title.trim().split(' ').last()} updated")
                     }
+
+                    window.isVisible = false
                 }
             }
         }

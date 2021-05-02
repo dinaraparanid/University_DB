@@ -1,7 +1,7 @@
 package app.gui.change.update
 
 import app.gui.change.ChangeWindow
-import app.gui.change.selector.DepartmentSelector
+import app.gui.change.selector.StudentSelector
 import app.core.Database
 import app.failureMessage
 import app.successMessage
@@ -9,26 +9,37 @@ import arrow.core.Either
 import arrow.core.None
 import arrow.core.Some
 
-internal class DepartmentUpdate : ChangeWindow("Update Department", "Title", "Faculty title") {
-    private val ds = DepartmentSelector().also { ds ->
-        ds.addSelectionListener { selectedId ->
-            ds.window.isVisible = false
+internal class StudentUpdating :
+    ChangeWindow(
+        "Update Student",
+        "First Name",
+        "Second Name",
+        "Middle Name",
+        "Group Title",
+        "Information"
+    ) {
+    private val ss = StudentSelector().also { ss ->
+        ss.addSelectionListener { selectedId ->
+            ss.window.isVisible = false
             window.isVisible = true
 
             ok.addActionListener {
-                Database.departmentRepository.update(
+                Database.studentRepository.update(
                     Either.Left(texts[0].text),
-                    Database.facultyRepository.getIdByTitle(texts[1].text).let {
+                    Either.Left(texts[1].text),
+                    Either.Left(texts[2].text),
+                    Database.groupRepository.getIdByTitle(texts[3].text).let {
                         when (it) {
                             None -> null
                             is Some -> Either.Right(it.value)
                         }
                     },
+                    Either.Left(texts[4].text),
                     Some(selectedId).toEither { String() }
                 ).let { res ->
                     when (res) {
                         None -> failureMessage()
-                        else -> successMessage("Department updated")
+                        is Some -> successMessage("Student updated")
                     }
 
                     window.isVisible = false
@@ -41,9 +52,9 @@ internal class DepartmentUpdate : ChangeWindow("Update Department", "Title", "Fa
         window.isVisible = false
 
         addActionListener {
-            ds.window.isVisible = true
+            ss.window.isVisible = true
         }
 
-        text = "Update Department"
+        text = "Update Student"
     }
 }

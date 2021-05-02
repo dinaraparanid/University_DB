@@ -2,7 +2,7 @@ package app.gui.change.add
 
 import app.core.Database
 
-internal class GroupAdd : AbstractAdd(
+internal class GroupAdding : AbstractAdding(
     "Add Group",
     Database.groupRepository.nextId(),
     Database.groupRepository::add,

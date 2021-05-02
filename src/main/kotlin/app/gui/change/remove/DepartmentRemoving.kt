@@ -4,7 +4,7 @@ import app.gui.change.selector.DepartmentSelector
 import app.core.Database
 import app.core.department.Department
 
-internal class DepartmentRemove : AbstractRemove<Department>(
+internal class DepartmentRemoving : AbstractRemoving<Department>(
     "Remove Department",
     DepartmentSelector(),
     Database.departmentRepository::remove,

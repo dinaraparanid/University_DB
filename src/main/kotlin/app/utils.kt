@@ -12,14 +12,14 @@ internal fun PreparedStatement.setValOrNull(ind: Int, v: Either<String, Int>?) =
 
 internal fun successMessage(message: String) = JOptionPane.showMessageDialog(
     null,
-    "Success",
     message,
+    "Success",
     JOptionPane.INFORMATION_MESSAGE
 )
 
-internal fun failureMessage() = JOptionPane.showMessageDialog(
+internal fun failureMessage(message: String = "Something went wrong") = JOptionPane.showMessageDialog(
     null,
-    "Something went wrong",
+    message,
     "Failure",
     JOptionPane.INFORMATION_MESSAGE
 )
