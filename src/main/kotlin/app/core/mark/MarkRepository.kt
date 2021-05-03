@@ -3,7 +3,6 @@ package app.core.mark
 import app.core.polymorphism.Entity
 import app.core.polymorphism.Repository
 import arrow.core.Either
-import java.lang.Exception
 import java.sql.Connection
 
 internal class MarkRepository(private val connection: Connection) : Repository(connection) {
@@ -50,24 +49,20 @@ internal class MarkRepository(private val connection: Connection) : Repository(c
         .prepareStatement(allByStudent)
         .apply { setInt(1, studentId) }
         .use { stm ->
-            try {
-                stm.executeQuery(all).use { res ->
-                    mutableListOf<Mark>().apply {
-                        while (res.next()) {
-                            add(
-                                Mark(
-                                    res.getInt("id"),
-                                    res.getInt("mark"),
-                                    res.getInt("student_id"),
-                                    res.getInt("subject_id"),
-                                    res.getString("date")
-                                )
+            stm.executeQuery().use { res ->
+                mutableListOf<Mark>().apply {
+                    while (res.next()) {
+                        add(
+                            Mark(
+                                res.getInt("id"),
+                                res.getInt("mark"),
+                                res.getInt("student_id"),
+                                res.getInt("subject_id"),
+                                res.getString("date")
                             )
-                        }
-                    }.toTypedArray()
-                }
-            } catch (e: Exception) {
-                arrayOf()
+                        )
+                    }
+                }.toTypedArray()
             }
         }
 

@@ -13,6 +13,12 @@ internal data class Date(private var day: Int, private var month: Int, private v
         LocalDate.now().year
     )
 
+    constructor(date: LocalDate) : this(
+        date.dayOfMonth,
+        date.monthValue,
+        date.year
+    )
+
     companion object {
         fun fromStr(str: String) =
             try {
@@ -46,7 +52,7 @@ internal data class Date(private var day: Int, private var month: Int, private v
         .getInstance()
         .apply {
             clear()
-            set(year, month, day)
+            set(year, month - 1, day) // какой долбаёб решил начинать месяц с 0
         }
         .toInstant()
         .atZone(ZoneId.systemDefault())

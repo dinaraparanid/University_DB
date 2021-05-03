@@ -45,14 +45,14 @@ internal abstract class AbstractSelector(
     inline fun addSelectionListener(crossinline func: (Int) -> Unit) {
         GlobalScope.launch {
             while (true) {
-
                 // I don't know why, but it helps to run new coroutines.
                 // So, don't remove this print (don't work without it)
 
                 print("")
 
-                if (selectedId is Some) {
-                    func(selectedId!!.orNull()!!)
+                if (selectedId != null) {
+                    if (selectedId is Some)
+                        func(selectedId!!.orNull()!!)
                     break
                 }
             }

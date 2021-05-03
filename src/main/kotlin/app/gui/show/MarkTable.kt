@@ -39,34 +39,40 @@ internal class MarkTable : Showable {
                         )
                     }
                     .sortedWith { f, s -> f.compareTo(s) }
-                    .forEach {
+                    .onEach {
                         mapContent.getOrPut(it.first) { sortedMapOf() }
 
                         mapContent[it.first]!![it.second] =
                             mapContent[it.first]!!.getOrPut(it.second) { "" } + "${it.third} "
                     }
+                    .run {
+                        mapContent.forEach { (_, u) ->
+                            range.forEach { u.getOrPut(Date(it)) { "" } }
+                        }
+                    }
             }
-
-        val subjects = mapContent.toList().map { it.first }.distinct()
 
         return JFrame("Marks").apply {
             bounds = Rectangle(200, 200, 800, 700)
             contentPane.add(
                 JScrollPane(
                     JTable(
-                        Array(8) { Array(subjects.size) { "" } }.also { content ->
+                        Array(mapContent.toList().map { it.first }.size) { Array(8) { "" } }.also { content ->
                             var ind = 0
 
                             mapContent.forEach { (subject, x) ->
-                                content[ind++] = mutableListOf(subject).apply { addAll(x.values) }.toTypedArray()
+                                content[ind++] = mutableListOf(subject).apply {
+                                    addAll(
+                                        x
+                                            .values
+                                            .toMutableList()
+                                            .also { it.addAll(Array(maxOf(8 - it.size, 0)) { "" }) }
+                                    )
+                                }.toTypedArray()
                             }
                         },
                         mutableListOf("Subject").apply {
-                            addAll(
-                                range
-                                    .map { Date(it.dayOfMonth, it.monthValue, it.year).toString() }
-                                    .toTypedArray()
-                            )
+                            addAll(range.map { Date(it.dayOfMonth, it.monthValue, it.year).toString() })
                         }.toTypedArray()
                     )
                 ),
