@@ -1,9 +1,8 @@
 package app.gui.change.selector
 
-import app.core.speciality.Speciality
 import app.gui.show.SpecialityTable
 
-internal class SpecialitySelector : AbstractSelector<Speciality>(
+internal class SpecialitySelector : AbstractSelector(
     "Select Speciality",
     SpecialityTable()
 )

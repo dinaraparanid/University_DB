@@ -6,9 +6,9 @@ import java.awt.BorderLayout
 import java.awt.Rectangle
 import javax.swing.*
 
-internal abstract class AbstractTable<T : Entity>(
+internal abstract class AbstractTable(
     private val title: String,
-    private val content: () -> Array<T>,
+    private val content: () -> Array<Entity>,
     private vararg val params: String
 ) : Showable {
     val cnt = content()

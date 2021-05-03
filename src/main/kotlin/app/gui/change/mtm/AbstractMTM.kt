@@ -1,16 +1,15 @@
 package app.gui.change.mtm
 
 import app.gui.change.selector.AbstractSelector
-import app.core.polymorphism.Entity
 import app.core.polymorphism.Showable
 import app.failureMessage
 import app.successMessage
 import arrow.core.None
 import arrow.core.Option
 
-internal abstract class AbstractMTM<F : Entity, S : Entity>(
-    s1: AbstractSelector<F>,
-    s2: AbstractSelector<S>,
+internal abstract class AbstractMTM(
+    s1: AbstractSelector,
+    s2: AbstractSelector,
     func: (Int, Int) -> Option<Unit>,
     successMessage: String
 ) : Showable {

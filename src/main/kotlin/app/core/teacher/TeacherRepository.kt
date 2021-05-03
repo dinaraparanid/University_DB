@@ -6,7 +6,7 @@ import arrow.core.Either
 import java.sql.Connection
 
 internal class TeacherRepository(private val connection: Connection) :
-    Repository<Teacher>(connection),
+    Repository(connection),
     GettableById<Teacher>,
     GettableIdByParams {
     private companion object SQLCommands {
@@ -78,7 +78,7 @@ internal class TeacherRepository(private val connection: Connection) :
 
     override fun all() = connection.createStatement().use { stm ->
         stm.executeQuery(all).use { res ->
-            mutableListOf<Teacher>().apply {
+            mutableListOf<Entity>().apply {
                 while (res.next()) {
                     val id = res.getInt("id")
 

@@ -3,6 +3,7 @@ package app.gui.show
 import app.core.Database
 import app.core.date.Date
 import app.core.date.DateProgression
+import app.core.polymorphism.Showable
 import app.gui.change.selector.StudentSelector
 import arrow.core.compareTo
 import java.awt.BorderLayout
@@ -13,7 +14,7 @@ import javax.swing.JFrame
 import javax.swing.JScrollPane
 import javax.swing.JTable
 
-internal class MarkTable {
+internal class MarkTable : Showable {
     private val ss = StudentSelector().apply {
         addSelectionListener { selectedId ->
             window.isVisible = false
@@ -74,7 +75,7 @@ internal class MarkTable {
         }
     }
 
-    fun show() {
+    override fun show() {
         ss.window.isVisible = true
     }
 }

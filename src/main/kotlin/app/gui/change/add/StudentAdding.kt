@@ -7,7 +7,6 @@ internal class StudentAdding : AbstractAdding(
     Database.studentRepository.nextId(),
     Database.studentRepository::add,
     "Student added",
-    "Add Student",
     "First Name",
     "Second Name",
     "Middle Name",

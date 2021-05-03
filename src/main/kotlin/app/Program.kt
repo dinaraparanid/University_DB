@@ -16,53 +16,53 @@ import javax.swing.JMenuBar
 
 object Program {
     private val showMenu = JMenu("Show").apply {
-        add(Caller("Students") { StudentTable().show() })
-        add(Caller("Groups") { GroupTable().show() })
-        add(Caller("Specialities") { SpecialityTable().show() })
-        add(Caller("Teachers") { SpecialityTable().show() })
-        add(Caller("Subjects") { SubjectTable().show() })
-        add(Caller("Departments") { DepartmentTable().show() })
-        add(Caller("Faculties") { FacultyTable().show() })
-        add(Caller("Marks of Student") { MarkTable().show() })
+        add(Caller("Students", StudentTable()))
+        add(Caller("Groups", GroupTable()))
+        add(Caller("Specialities", SpecialityTable()))
+        add(Caller("Teachers", SpecialityTable()))
+        add(Caller("Subjects", SubjectTable()))
+        add(Caller("Departments", DepartmentTable()))
+        add(Caller("Faculties", FacultyTable()))
+        add(Caller("Marks of Student", MarkTable()))
     }
 
     private val addMenu = JMenu("Add").apply {
-        add(Caller("Add Student") { StudentAdding().show() })
-        add(Caller("Add Group") { GroupAdding().show() })
-        add(Caller("Add Speciality") { SpecialityAdding().show() })
-        add(Caller("Add Teacher") { TeacherAdding().show() })
-        add(Caller("Add Subject") { SubjectAdding().show() })
-        add(Caller("Add Department") { DepartmentAdding().show() })
-        add(Caller("Add Faculty") { FacultyAdding().show() })
-        add(Caller("Add Mark to Student") { MarkAdding().show() })
-        add(Caller("Add Subject to Department") { AddingSubjectToDepartment().show() })
-        add(Caller("Add Subject to Teacher") { AddingSubjectToTeacher().show() })
-        add(Caller("Add Teacher to Speciality") { AddingTeacherToSpeciality().show() })
+        add(Caller("Add Student", StudentAdding()))
+        add(Caller("Add Group", GroupAdding()))
+        add(Caller("Add Speciality", SpecialityAdding()))
+        add(Caller("Add Teacher", TeacherAdding()))
+        add(Caller("Add Subject", SubjectAdding()))
+        add(Caller("Add Department", DepartmentAdding()))
+        add(Caller("Add Faculty", FacultyAdding()))
+        add(Caller("Add Mark to Student", MarkAdding()))
+        add(Caller("Add Subject to Department", AddingSubjectToDepartment()))
+        add(Caller("Add Subject to Teacher", AddingSubjectToTeacher()))
+        add(Caller("Add Teacher to Speciality", AddingTeacherToSpeciality()))
     }
 
     private val removeMenu = JMenu("Remove").apply {
-        add(Caller("Remove Student") { StudentRemoving().show() })
-        add(Caller("Remove Group") { GroupRemoving().show() })
-        add(Caller("Remove Speciality") { SpecialityRemoving().show() })
-        add(Caller("Remove Teacher") { TeacherRemoving().show() })
-        add(Caller("Remove Subject") { SubjectRemoving().show() })
-        add(Caller("Remove Department") { DepartmentRemoving().show() })
-        add(Caller("Remove Faculty") { FacultyRemoving().show() })
-        add(Caller("Remove Mark from Student") { RemovingSubjectFromDepartment().show() })
-        add(Caller("Remove Subject from Department") { RemovingSubjectFromTeacher().show() })
-        add(Caller("Remove Subject from Teacher") { RemovingTeacherFromSpeciality().show() })
-        add(Caller("Remove Teacher from Speciality") { MarkRemoving().show() })
+        add(Caller("Remove Student", StudentRemoving()))
+        add(Caller("Remove Group", GroupRemoving()))
+        add(Caller("Remove Speciality", SpecialityRemoving()))
+        add(Caller("Remove Teacher", TeacherRemoving()))
+        add(Caller("Remove Subject", SubjectRemoving()))
+        add(Caller("Remove Department", DepartmentRemoving()))
+        add(Caller("Remove Faculty", FacultyRemoving()))
+        add(Caller("Remove Mark from Student", RemovingSubjectFromDepartment()))
+        add(Caller("Remove Subject from Department", RemovingSubjectFromTeacher()))
+        add(Caller("Remove Subject from Teacher", RemovingTeacherFromSpeciality()))
+        add(Caller("Remove Teacher from Speciality", MarkRemoving()))
     }
 
     private val updateMenu = JMenu("Update").apply {
-        add(Caller("Update Student") { StudentUpdating().show() })
-        add(Caller("Update Group") { GroupUpdating().show() })
-        add(Caller("Update Speciality") { SpecialityUpdating().show() })
-        add(Caller("Update Teacher") { TeacherUpdating().show() })
-        add(Caller("Update Subject") { SubjectUpdating().show() })
-        add(Caller("Update Department") { DepartmentUpdating().show() })
-        add(Caller("Update Faculty") { FacultyUpdating().show() })
-        add(Caller("Update Mark of Student") { MarkUpdating().show() })
+        add(Caller("Update Student", StudentUpdating()))
+        add(Caller("Update Group", GroupUpdating()))
+        add(Caller("Update Speciality", SpecialityUpdating()))
+        add(Caller("Update Teacher", TeacherUpdating()))
+        add(Caller("Update Subject", SubjectUpdating()))
+        add(Caller("Update Department", DepartmentUpdating()))
+        add(Caller("Update Faculty", FacultyUpdating()))
+        add(Caller("Update Mark of Student", MarkUpdating()))
     }
 
     private val frame = JFrame("University Database").also { frame ->
@@ -82,5 +82,7 @@ object Program {
 
     /** Start of whole program */
 
-    fun start() { frame.isVisible = true }
+    fun start() {
+        frame.isVisible = true
+    }
 }

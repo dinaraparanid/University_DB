@@ -1,9 +1,8 @@
 package app.gui.show
 
 import app.core.Database
-import app.core.subject.Subject
 
-internal class SubjectTable : AbstractTable<Subject>(
+internal class SubjectTable : AbstractTable(
     "Subjects",
     Database.subjectRepository::all,
     "Title"

@@ -1,6 +1,7 @@
 package app.core.subject
 
 import app.core.Database
+import app.core.polymorphism.Entity
 import app.core.polymorphism.GettableById
 import app.core.polymorphism.Repository
 import arrow.core.Either
@@ -9,7 +10,7 @@ import arrow.core.Some
 import java.sql.Connection
 
 internal class SubjectRepository(private val connection: Connection) :
-    Repository<Subject>(connection),
+    Repository(connection),
     GettableById<Subject> {
     private companion object SQLCommands {
         private const val all = "SELECT * FROM Subject"
@@ -70,7 +71,7 @@ internal class SubjectRepository(private val connection: Connection) :
 
     override fun all() = connection.createStatement().use { stm ->
         stm.executeQuery(all).use { res ->
-            mutableListOf<Subject>().apply {
+            mutableListOf<Entity>().apply {
                 while (res.next()) {
                     val id = res.getInt("id")
 

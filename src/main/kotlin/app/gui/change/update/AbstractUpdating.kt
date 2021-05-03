@@ -2,7 +2,6 @@ package app.gui.change.update
 
 import app.gui.change.ChangeWindow
 import app.gui.change.selector.AbstractSelector
-import app.core.polymorphism.Entity
 import app.failureMessage
 import app.successMessage
 import arrow.core.Either
@@ -10,9 +9,9 @@ import arrow.core.None
 import arrow.core.Option
 import java.awt.Rectangle
 
-internal abstract class AbstractUpdating<T : Entity>(
+internal abstract class AbstractUpdating(
     title: String,
-    private val selector: AbstractSelector<T>,
+    private val selector: AbstractSelector,
     updateFunc: (Array<out Either<String, Int>?>) -> Option<Unit>,
     successMessage: String,
     vararg args: String

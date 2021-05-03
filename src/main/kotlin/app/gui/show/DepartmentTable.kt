@@ -1,9 +1,8 @@
 package app.gui.show
 
 import app.core.Database
-import app.core.department.Department
 
-internal class DepartmentTable : AbstractTable<Department>(
+internal class DepartmentTable : AbstractTable(
     "Departments",
     Database.departmentRepository::all,
     "Title"

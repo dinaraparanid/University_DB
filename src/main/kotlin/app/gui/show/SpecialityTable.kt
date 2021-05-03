@@ -1,9 +1,8 @@
 package app.gui.show
 
 import app.core.Database
-import app.core.speciality.Speciality
 
-internal class SpecialityTable : AbstractTable<Speciality>(
+internal class SpecialityTable : AbstractTable(
     "Specialities",
     Database.specialityRepository::all,
     "Title"

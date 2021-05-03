@@ -1,6 +1,7 @@
 package app.core.faculty
 
 import app.core.Database
+import app.core.polymorphism.Entity
 import app.core.polymorphism.GettableIdByParams
 import app.core.polymorphism.Repository
 import app.core.polymorphism.getIdByParams
@@ -8,7 +9,7 @@ import arrow.core.Either
 import java.sql.Connection
 
 internal class FacultyRepository(private val connection: Connection) :
-    Repository<Faculty>(connection),
+    Repository(connection),
     GettableIdByParams {
     private companion object SQLCommands {
         private const val all = "SELECT * FROM Faculty"
@@ -31,7 +32,7 @@ internal class FacultyRepository(private val connection: Connection) :
 
     override fun all() = connection.createStatement().use { stm ->
         stm.executeQuery(all).use { res ->
-            mutableListOf<Faculty>().apply {
+            mutableListOf<Entity>().apply {
                 while (res.next()) {
                     val id = res.getInt("id")
 

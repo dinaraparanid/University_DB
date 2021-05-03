@@ -2,9 +2,8 @@ package app.gui.change.update
 
 import app.gui.change.selector.TeacherSelector
 import app.core.Database
-import app.core.teacher.Teacher
 
-internal class TeacherUpdating : AbstractUpdating<Teacher>(
+internal class TeacherUpdating : AbstractUpdating(
     "Update Teacher",
     TeacherSelector(),
     Database.teacherRepository::update,

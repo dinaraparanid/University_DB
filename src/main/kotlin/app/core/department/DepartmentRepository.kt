@@ -1,13 +1,14 @@
 package app.core.department
 
 import app.core.Database
+import app.core.polymorphism.Entity
 import app.core.polymorphism.GettableById
 import app.core.polymorphism.Repository
 import arrow.core.Either
 import java.sql.Connection
 
 internal class DepartmentRepository(private val connection: Connection) :
-    Repository<Department>(connection),
+    Repository(connection),
     GettableById<Department> {
     private companion object SQLCommands {
         private const val all = "SELECT * FROM Department"
@@ -74,7 +75,7 @@ internal class DepartmentRepository(private val connection: Connection) :
 
     override fun all() = connection.createStatement().use { stm ->
         stm.executeQuery(all).use { res ->
-            mutableListOf<Department>().apply {
+            mutableListOf<Entity>().apply {
                 while (res.next()) {
                     val id = res.getInt("id")
 

@@ -1,9 +1,8 @@
 package app.gui.show
 
 import app.core.Database
-import app.core.teacher.Teacher
 
-internal class TeacherTable : AbstractTable<Teacher>(
+internal class TeacherTable : AbstractTable(
     "Teachers",
     Database.teacherRepository::all,
     "First Name",

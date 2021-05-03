@@ -1,9 +1,8 @@
 package app.gui.show
 
 import app.core.Database
-import app.core.group.Group
 
-internal class GroupTable : AbstractTable<Group>(
+internal class GroupTable : AbstractTable(
     "Groups",
     Database.groupRepository::all,
     "Title",

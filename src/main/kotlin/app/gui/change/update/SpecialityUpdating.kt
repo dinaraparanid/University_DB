@@ -2,9 +2,8 @@ package app.gui.change.update
 
 import app.gui.change.selector.SpecialitySelector
 import app.core.Database
-import app.core.speciality.Speciality
 
-internal class SpecialityUpdating : AbstractUpdating<Speciality>(
+internal class SpecialityUpdating : AbstractUpdating(
     "Update Speciality",
     SpecialitySelector(),
     Database.specialityRepository::update,

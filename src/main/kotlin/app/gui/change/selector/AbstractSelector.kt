@@ -13,10 +13,10 @@ import javax.swing.JFrame
 import javax.swing.JScrollPane
 import javax.swing.JTable
 
-internal abstract class AbstractSelector<T>(
+internal abstract class AbstractSelector(
     val title: String,
-    private val tab: AbstractTable<T>
-) where T : Entity {
+    private val tab: AbstractTable
+) {
     private val table: JTable
         get() = tab.run {
             table().apply {

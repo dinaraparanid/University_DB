@@ -2,9 +2,8 @@ package app.gui.change.remove
 
 import app.gui.change.selector.FacultySelector
 import app.core.Database
-import app.core.faculty.Faculty
 
-internal class FacultyRemoving : AbstractRemoving<Faculty>(
+internal class FacultyRemoving : AbstractRemoving(
     FacultySelector(),
     Database.facultyRepository::remove,
     "Faculty removed"

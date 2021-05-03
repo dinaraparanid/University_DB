@@ -1,10 +1,12 @@
 package app.core.mark
 
+import app.core.polymorphism.Entity
 import app.core.polymorphism.Repository
 import arrow.core.Either
+import java.lang.Exception
 import java.sql.Connection
 
-internal class MarkRepository(private val connection: Connection) : Repository<Mark>(connection) {
+internal class MarkRepository(private val connection: Connection) : Repository(connection) {
     private companion object SQLCommands {
         private const val all = "SELECT * FROM Mark"
 
@@ -26,7 +28,7 @@ internal class MarkRepository(private val connection: Connection) : Repository<M
 
     override fun all() = connection.createStatement().use { stm ->
         stm.executeQuery(all).use { res ->
-            mutableListOf<Mark>().apply {
+            mutableListOf<Entity>().apply {
                 while (res.next()) {
                     add(
                         Mark(
@@ -48,20 +50,24 @@ internal class MarkRepository(private val connection: Connection) : Repository<M
         .prepareStatement(allByStudent)
         .apply { setInt(1, studentId) }
         .use { stm ->
-            stm.executeQuery(all).use { res ->
-                mutableListOf<Mark>().apply {
-                    while (res.next()) {
-                        add(
-                            Mark(
-                                res.getInt("id"),
-                                res.getInt("mark"),
-                                res.getInt("student_id"),
-                                res.getInt("subject_id"),
-                                res.getString("date")
+            try {
+                stm.executeQuery(all).use { res ->
+                    mutableListOf<Mark>().apply {
+                        while (res.next()) {
+                            add(
+                                Mark(
+                                    res.getInt("id"),
+                                    res.getInt("mark"),
+                                    res.getInt("student_id"),
+                                    res.getInt("subject_id"),
+                                    res.getString("date")
+                                )
                             )
-                        )
-                    }
-                }.toTypedArray()
+                        }
+                    }.toTypedArray()
+                }
+            } catch (e: Exception) {
+                arrayOf()
             }
         }
 
